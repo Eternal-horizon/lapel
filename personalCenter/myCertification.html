@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html>
+<head>    
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="author" content=""/>
+    <meta name="copyright" content=""/>
+    <title></title>    
+    <link rel="stylesheet" href="../css/swiper.3.2.0.min.css" type="text/css">
+    <link href="../css/style.css" rel="stylesheet" type="text/css">
+    <link href="../css/iconfont.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="../public/build/template.js" type="text/javascript"></script> 
+    <script src="../js/vue.js" type="text/javascript"></script> 
+    <script src="../js/jquery-1.12.4.min.js" type="text/javascript"></script> 
+    <script src="../js/layer.js" type="text/javascript"></script> 
+    <script src="../js/public.js" type="text/javascript"></script> 
+    <script src="../js/swiper.3.2.0.jquery.min.js" type="text/javascript"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+</head>
+<body>
+  <div id="header"></div>
+  <div class="main authentication clearfix">
+        <div id="left"></div>
+        <div class="authentication-form" id="authentication">
+            <div>
+                <h3>蓝聘账号认证</h3>
+                <p>信息认证，提升竞争力</p>
+                <div class="authentication-data">
+                    <input type="text" placeholder="姓名" class="authentication-input" v-model="name"/>
+                    <input type="text" placeholder="联系邮箱" class="authentication-input" v-model="mail"/>
+                    <div class="business-address">
+                        <div class="clearfix">
+                            <select v-model="provinceId" @click="changeArea(provinceId,1)">
+                                <option value="0">请选择</option>
+                                <option v-for="(item,index) in provinceList" :value="item.code">{{item.name}}</option>
+                            </select>
+                            <select v-model="cityId" @click="changeArea(cityId,2)">
+                                <option value="0">请选择</option>
+                                <option v-for="(item,index) in cityList" :value="item.code">{{item.name}}</option>
+                            </select>
+                            <select v-model="areaId">
+                                <option value="0">请选择</option>
+                                <option v-for="(item,index) in areaList" :value="item.code" >{{item.name}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <select v-model="idCard" >
+                        <option value="0">身份证</option>
+                        <option value="1">护照</option>
+                    </select>
+                    <input type="text" placeholder="证件号" class="authentication-input" v-model="certificate"/>
+                    <div v-if="idCard==0" v-cloak>
+                        <div class="upload clearfix" >
+                            <div class="upload-file">
+                                <input type="file"  @change="changeFn($event,1)"/>
+                                上传正面
+                            </div>
+                            <div class="upload-tips" >
+                                <h5>证件照片-正面</h5>
+                                <p>请上传清晰完整的证件照片，照片四周需要留有一定空白</p>
+                            </div>
+                        </div>
+                        <div class="upload-pic" >
+                            <div v-if="idCardPicFrontUrl!=''"
+                        :style="{background: 'url('+ip+idCardPicFrontUrl+') no-repeat center/cover'}">
+                            </div>
+                            <div v-else style="background:url('../images/positive.png') no-repeat center;background-size:cover;">
+                                
+                            </div>    
+                        </div>
+                        <div class="upload clearfix">
+                            <div class="upload-file">
+                                <input type="file"  @change="changeFn($event,2)"/>
+                                上传反面
+                            </div>
+                            <div class="upload-tips">
+                                <h5>证件照片-反面</h5>
+                                <p>请上传清晰完整的证件照片，照片四周需要留有一定空白</p>
+                            </div>
+                        </div>
+                        <div class="upload-pic">
+                            <div v-if="idCardPicReverseUrl!=''"
+                        :style="{background: 'url('+ip+idCardPicReverseUrl+') no-repeat center/cover'}">
+                            </div>
+                            <div v-else style="background:url('../images/reverse-side.png') no-repeat center;background-size:cover;">
+                                
+                            </div>    
+                        </div>
+                    </div>    
+                    <div v-if="idCard==1" v-cloak>
+                        <div class="upload clearfix" >
+                            <div class="upload-file">
+                                <input type="file"  @change="changeFn($event,3)"/>
+                                上传护照
+                            </div>
+                            <div class="upload-tips" >
+                                <h5>护照照片</h5>
+                                <p>请上传清晰完整的证件照片，照片四周需要留有一定空白</p>
+                            </div>
+                        </div>
+                        <div class="upload-pic" >
+                            <div v-if="idCardPicUrl1!=''"
+                        :style="{background: 'url('+ip+idCardPicUrl1+') no-repeat center/cover'}">
+                            </div>
+                            <div v-else style="background:url('../images/positive.png') no-repeat center;background-size:cover;">
+                                
+                            </div>    
+                        </div>
+                        <div class="upload clearfix">
+                            <div class="upload-file">
+                                <input type="file"  @change="changeFn($event,4)"/>
+                                上传港澳通行证
+                            </div>
+                            <div class="upload-tips">
+                                <h5>港澳通行证</h5>
+                                <p>请上传清晰完整的证件照片，照片四周需要留有一定空白</p>
+                            </div>
+                        </div>
+                        <div class="upload-pic">
+                            <div v-if="idCardPicUrl2!=''"
+                        :style="{background: 'url('+ip+idCardPicUrl2+') no-repeat center/cover'}">
+                            </div>
+                            <div v-else style="background:url('../images/reverse-side.png') no-repeat center;background-size:cover;">
+                                
+                            </div>    
+                        </div>
+                    </div> 
+                    <input type="text" placeholder="政治面貌" class="authentication-input" v-model="politics"/>
+                    <input type="text" placeholder="文化程度" class="authentication-input" v-model="education"/>
+                    <a href="javascript:;" @click="submit">提交认证</a>
+                </div>
+
+            </div>
+        </div>
+  </div>
+  <div id="footer"></div>
+
+   <script type="text/javascript">
+        var headerHTML = template('header',{"headerState":2}); 
+        $('#header').html(headerHTML);
+        var footerHTML = template('footer',{}); 
+        $('#footer').html(footerHTML); 
+        var authentication = new Vue({
+            el: '#authentication',
+            data: {
+                ip:'',
+               name:'',
+               mail:'',
+               idCard:0,
+               certificate:'',
+               politics:'',
+               education:'',
+               idCardPicFrontUrl:'',
+               idCardPicReverseUrl:'',
+               idCardPicUrl1:'',
+               idCardPicUrl2:'',
+               provinceList:[],
+               cityList:[],
+               areaList:[],
+               provinceId:'0',
+               cityId:'0',
+               areaId:'0',
+               provinceName:'',
+               cityName:'',
+               areaName:''
+            },
+            filters:{
+               
+            },
+            mounted(){
+                var _this = this;
+                this.ip=ip;
+                console.log(ip);
+                //地址
+                $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url: "/hriceSite/address/address",
+                    data: {},
+                    success: function (res) {
+                        console.log(res);
+                        if (res.code == 0) {
+                            _this.provinceList=res.data;
+                        }
+                    },
+                    error : function() {
+                        console.log("异常");
+                    }
+                }); 
+                //用户信息
+                $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url: "/hriceSite/user/get-user",
+                    data: {},
+                    success: function (res) {
+                        var orgName,authFlag,provinceName,cityName,state;
+                        if(res.code==0){
+                            _this.name=res.data.userName;
+                            _this.mail=res.data.email;
+                            _this.idCard=res.data.certificatesType;
+                            _this.certificate=res.data.certificatesNo;
+                            _this.politics=res.data.politicalStatusName;
+                            _this.education=res.data.educationName;
+                            if(res.data.certificatesType==0){
+                                _this.idCardPicFrontUrl=res.data.certificatesPhoto0;
+                                _this.idCardPicReverseUrl=res.data.certificatesPhoto1;
+                            }else{
+                                _this.idCardPicUrl1=res.data.certificatesPhoto0;
+                                _this.idCardPicUrl2=res.data.certificatesPhoto1;
+                            }
+                         
+                            _this.provinceId=res.data.provinceCode;
+                            _this.cityId=res.data.cityCode;
+                            _this.areaId=res.data.areaCode;
+                            
+                            _this.changeDefauleCity(_this.provinceId,1,_this.cityId);
+                            _this.changeDefauleCity(_this.cityId,2,_this.areaId);    
+                            if(res.data.orgType==0){
+                                orgName="个人";
+                                state=1;
+                            }else{
+                                orgName="企业";
+                                state=3;
+                            }
+                            if(res.data.authFlag==0){
+                                authFlag="未认证";
+                            }else{
+                                authFlag="已认证";
+                            }
+                            if(res.data.provinceName){
+                                provinceName=res.data.provinceName;
+                            }else{
+                                provinceName="省份";
+                            }  
+                            if(res.data.provinceName){
+                                cityName=res.data.cityName;
+                            }else{
+                                cityName="城市";
+                            }    
+                            var data={"name":res.data.userName,"province":provinceName,"city":cityName,"State1":0,"State2":0,"State3":0,"State4":0,"State5":0,"State6":state,"State7":0,"State8":0,"orgName":orgName,"authFlag":authFlag} 
+                            var leftHTML = template('left',data); 
+                            $('#left').html(leftHTML);
+                        }
+                        
+                    },
+                    error : function() {
+                        console.log("异常");
+                    }
+                });   
+            },
+            methods: {
+                changeDefauleCity:function(id,num,defaultId){
+                    //查询下级城市
+                   var _this = this;
+                    if(this.provinceId=="0"){
+                        this.cityId="0";
+                        this.cityList=[];
+                        this.areaId="0";
+                        this.areaList=[];
+                        return;
+                    }
+                    $.ajax({
+                        type: "GET",
+                        dataType: "json",
+                        url: "/hriceSite/address/address",
+                        data: {"code":id},
+                        success: function (res) {
+                            console.log(res);
+                            if (res.code == 0) {
+                               switch(num){
+                                   case 1:_this.cityList=res.data;_this.cityId=defaultId;break;
+                                   case 2:_this.areaList=res.data;_this.areaId=defaultId;break;
+                               }
+                            }
+                        },
+                        error : function() {
+                            console.log("异常");
+                        }
+                    }); 
+                   
+                },
+                changeArea:function(code,num){
+                    var _this=this;
+                    if(num==1){
+                        if(this.provinceId=="0"){
+                            this.cityId="0";
+                            this.cityList=[];
+                            this.areaId="0";
+                            this.areaList=[];
+                            return;
+                        }
+                    }
+                    if(num==2){
+                        if(this.cityId=="0"){
+                            this.areaId="0";
+                            this.areaList=[];
+                            return;
+                        }
+                    }
+                    $.ajax({
+                        type: "GET",
+                        dataType: "json",
+                        url: "/hriceSite/address/address",
+                        data: {"code":code},
+                        success: function (res) {
+                            console.log(res);
+                            if (res.code == 0) {
+                                if(num==1){
+                                    _this.cityList=res.data;_this.cityId=0;_this.areaId=0;_this.areaList = [];
+                                }else if(num==2){
+                                    _this.areaList=res.data;_this.areaId=0;
+                                }   
+                               
+                            }
+                        },
+                        error : function() {
+                            console.log("异常");
+                        }
+                    }); 
+                },
+                changeFn:function(e,num){
+                var _this=this;
+                var deviceFile = e.target.files[0];
+                var formData = new FormData();
+                formData.append('file',deviceFile);
+                console.log(deviceFile);
+                    $.ajax({
+                        type: "POST",
+                        url: "/hriceSite/upload/upload-pic",
+                        data: formData,
+                        contentType:false,
+                        processData:false,
+                        success: function (res) {
+                            console.log(res);
+                            if (res.code == 0) {
+                                switch(num){
+                                    case 1:_this.idCardPicFrontUrl=res.data.src;break;
+                                    case 2:_this.idCardPicReverseUrl=res.data.src;break;
+                                    case 3:_this.idCardPicUrl1=res.data.src;break;
+                                    case 4:_this.idCardPicUrl2=res.data.src;break;
+                                }
+                                layer.msg(res.message);
+                            }
+                        },
+                        error : function() {
+                            console.log("异常");
+                        }
+                    }); 
+               },
+               submit:function(){
+                    if(this.name==""){
+                        layer.msg("请输入姓名");
+                        return;
+                    }
+                    if(this.mail==""){
+                        layer.msg("请输入邮箱");
+                        return;
+                    }
+                    if(this.certificate==""){
+                        layer.msg("请输入证件号");
+                        return;
+                    }
+                    if(this.politics==""){
+                        layer.msg("请输入政治面貌");
+                        return;
+                    }
+                    if(this.education==""){
+                        layer.msg("请输入文化程度");
+                        return;
+                    }
+                    if(this.idCardPicFrontUrl==""){
+                        layer.msg("请上传身份证正面照");
+                        return;
+                    }
+                    if(this.idCardPicReverseUrl==""){
+                        layer.msg("请上传身份证反面照");
+                        return;
+                    }
+
+                    for(var i=0;i<this.provinceList.length;i++){
+                        if(this.provinceList[i].code==this.provinceId){
+                            this.provinceName=this.provinceList[i].name;
+                        }
+                    }
+                    for(var j=0;j<this.cityList.length;j++){
+                        
+                        if(this.cityList[j].code==this.cityId){
+                            this.cityName=this.cityList[j].name;
+                        }
+                    }
+                    for(var k=0;k<this.areaList.length;k++){
+                        if(this.areaList[k].code==this.areaId){
+                            this.areaName=this.areaList[k].name;
+                        }
+                    }
+                    console.log(this.areaName+""+this.cityName+""+this.provinceName);
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "/hriceSite/user/real-name-authentication",
+                        data: {"provinceName":this.provinceName,"cityName":this.cityName,"areaName": this.areaName,"provinceCode":this.provinceId,"cityCode":this.cityId,"areaCode":this.areaId,"userName":this.name,"email":this.mail,"certificatesNo":this.certificate,"politicalStatusName":this.politics,"educationName":this.education,"certificatesPhoto0":this.idCardPicFrontUrl,"certificatesPhoto1":this.idCardPicReverseUrl,"certificatesType":this.idCard},
+                        success: function (res) {
+                            console.log(res);
+                            if (res.code == 0) {
+                            layer.msg(res.message);
+                            }
+                        },
+                        error : function() {
+                            console.log("异常");
+                        }
+                    }); 
+               }
+            }
+        })   
+    </script>
+        
+</body>
+</html>
+
+

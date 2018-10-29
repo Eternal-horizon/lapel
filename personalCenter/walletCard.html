@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>    
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="author" content=""/>
+    <meta name="copyright" content=""/>
+    <title></title>    
+    <link rel="stylesheet" href="../css/swiper.3.2.0.min.css" type="text/css">
+    <link href="../css/style.css" rel="stylesheet" type="text/css">
+    <link href="../css/iconfont.css" rel="stylesheet" type="text/css">
+    <script src="../public/build/template.js" type="text/javascript"></script> 
+    <script src="../js/vue.js" type="text/javascript"></script> 
+    <script src="../js/jquery-1.12.4.min.js" type="text/javascript"></script> 
+    <script src="../js/layer.js" type="text/javascript"></script> 
+    <script src="../js/public.js" type="text/javascript"></script> 
+    <script src="../js/swiper.3.2.0.jquery.min.js" type="text/javascript"></script>
+    <script src="../js/bank.js" type="text/javascript"></script> 
+    <!--[if lte IE 9]>
+        <script src="js/respond.min.js" type="text/javascript"></script>
+        <script src="js/html5shiv-printshiv.min.js" type="text/javascript"></script>
+    <![endif]-->    
+</head>
+<body>
+  <div id="header"></div>
+  <div class="main authentication clearfix">
+        <div id="left"></div>
+        <div class="account" id="bankCard">
+            <div class="account-head"><a href="">我的钱包</a>  >  <a href="">银行卡管理</a></div>
+            <div class="bank-manage">
+                <h4>我的银行卡</h4>
+                <div class="clearfix">
+                    <div class="bank-list" v-for="(item,index) in banks">
+                        <div class="clearfix">
+                            <span v-cloak>{{item.bankName}}</span>
+                            <a href="javascript:;" @click="del(item.id)">删除</a>
+                        </div>
+                        <p v-cloak>{{item.bankCard}}</p>
+                    </div>
+                    
+                    <div class="bank-list" @click="addBank" style="background:url('../images/bank-bg.png') no-repeat center;background-size:cover;">
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="bank-manage">
+                <h4>添加银行卡</h4>
+                <div class="account-name" ><span>充值账户:</span v-clock> {{name}}</div>
+                <div class="account-input js-account-input">
+                    <span>银行卡号:</span>
+                    <input type="text" placeholder="请输入银行卡号" v-model="bankCard" @keyup="setBank"/>
+                </div>
+                <div class="account-input">
+                    <span>所属银行:</span>
+                    <input type="text" placeholder="请输入银行卡号" v-model="bankName" />
+                </div>
+                <a href="javascaript:;" @click="bind">绑 定</a>
+            </div>
+        </div>
+  </div>
+  <div id="footer"></div>
+    
+    <script type="text/javascript">
+       var headerHTML = template('header',{"headerState":2}); 
+        $('#header').html(headerHTML);
+        var footerHTML = template('footer',{}); 
+        $('#footer').html(footerHTML); 
+        
+       var bankCard = new Vue({
+            el: '#bankCard',
+            data: {
+                bankCard:'',
+                bankName:'',
+                banks:[],
+                name:''
+            },
+            filters:{
+                
+            },
+            mounted(){
+                console.log(localStorage);
+                var _this = this;
+                //用户信息
+                $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url: "/hriceSite/user/get-user",
+                    data: {},
+                    success: function (res) {
+                        var orgName,authFlag,provinceName,cityName,state;
+                        if(res.code==0){
+                            _this.name=res.data.userName;
+                            if(res.data.orgType==0){
+                                orgName="个人";
+                                state=0;
+                            }else{
+                                orgName="企业";
+                                state=2;
+                            }
+                            if(res.data.authFlag==0){
+                                authFlag="未认证";
+                            }else{
+                                authFlag="已认证";
+                            }
+                            if(res.data.provinceName){
+                                provinceName=res.data.provinceName;
+                            }else{
+                                provinceName="省份";
+                            }  
+                            if(res.data.provinceName){
+                                cityName=res.data.cityName;
+                            }else{
+                                cityName="城市";
+                            }    
+                            var data={"name":res.data.userName,"province":provinceName,"city":cityName,"State1":0,"State2":0,"State3":0,"State4":0,"State5":1,"State6":state,"State7":0,"State8":0,"orgName":orgName,"authFlag":authFlag} 
+                            var leftHTML = template('left',data); 
+                            $('#left').html(leftHTML);
+                        }
+                        
+                    },
+                    error : function() {
+                        console.log("异常");
+                    }
+                });  
+                $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url: "/hriceSite/user/bank-account",
+                    success: function (res) {
+                        console.log(res);
+                        if (res.code == 0) {
+                           _this.banks = res.data;
+
+                        }
+                    },
+                    error : function() {
+                        console.log("异常");
+                    }
+                });  
+            },
+            methods: {
+                bind:function(){
+                    console.log(localStorage.getItem("tokenId"));
+                    var _this = this;
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "/hriceSite/user/bind-bank",
+                        data: {"bankCard":this.bankCard,"bankName":this.bankName},
+                        success: function (res) {
+                            console.log();
+                            layer.msg(res.message); 
+                            if (res.code == 0) {
+                                
+                                //更新
+                                $.ajax({
+                                    type: "GET",
+                                    dataType: "json",
+                                    url: "/hriceSite/user/bank-account",
+                                    success: function (res) {
+                                        console.log(res);
+                                        if (res.code == 0) {
+                                        _this.banks = res.data;
+                                        }
+                                    },
+                                    error : function() {
+                                        console.log("异常");
+                                    }
+                                });   
+                            }
+                        },
+                        error : function() {
+                            console.log("异常");
+                        }
+                    });    
+                },
+                setBank:function(){
+                    var name =bankCardAttribution(this.bankCard);
+                    this.bankName = name.bankName;    
+                },
+                addBank:function(){
+                    $(".js-account-input input").focus();
+                },
+                del:function(id){
+                    var _this = this;
+                    layer.confirm('确定删除银行卡吗', {
+                        btn: ['确定','取消'] //按钮
+                        }, function(){
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: "/hriceSite/user/del-bank-account",
+                                data: {"accountId":id},
+                                success: function (res) {
+                                    if (res.code == 0) {
+                                        layer.msg('删除银行卡成功');  
+                                        //更新
+                                        $.ajax({
+                                            type: "GET",
+                                            dataType: "json",
+                                            url: "/hriceSite/user/bank-account",
+                                            success: function (res) {
+                                                console.log(res);
+                                                if (res.code == 0) {
+                                                _this.banks = res.data;
+                                                }
+                                            },
+                                            error : function() {
+                                                console.log("异常");
+                                            }
+                                        });  
+                                    }
+                                },
+                                error : function() {
+                                    console.log("异常");
+                                }
+                            });   
+                    });
+                   
+                }
+
+            }
+        })
+    
+
+    </script>
+        
+</body>
+</html>
+
+

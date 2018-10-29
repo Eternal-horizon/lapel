@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>    
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="author" content=""/>
+    <meta name="copyright" content=""/>
+    <title></title>    
+    <link rel="stylesheet" href="../css/swiper.3.2.0.min.css" type="text/css">
+    <link href="../css/style.css" rel="stylesheet" type="text/css">
+    <link href="../css/iconfont.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="../public/build/template.js" type="text/javascript"></script> 
+    <script src="../js/vue.js" type="text/javascript"></script> 
+    <script src="../js/jquery-1.12.4.min.js" type="text/javascript"></script> 
+    <script src="../js/layer.js" type="text/javascript"></script> 
+    <script src="../js/public.js" type="text/javascript"></script> 
+    <script src="../js/swiper.3.2.0.jquery.min.js" type="text/javascript"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <!--[if lte IE 9]>
+        <script src="js/respond.min.js" type="text/javascript"></script>
+        <script src="js/html5shiv-printshiv.min.js" type="text/javascript"></script>
+    <![endif]-->    
+</head>
+<body>
+  <div id="header"></div>
+  <div class="main authentication clearfix">
+        <div id="left"></div>
+        <div class="assets" id="wallet">
+           <div class="my-wallet">
+               <h3>我的资产</h3>
+               <div class="my-wallet-data">
+                   <div>
+                       <h5>账户余额</h5>
+                       <p v-cloak>{{account}}<span> 元</span></p>
+                   </div>
+                   <div>
+                        <h5>托管金额</h5>
+                        <p v-cloak>{{trusteeship}}<span> 元</span></p>
+                    </div>
+                    <div>
+                        <h5>提现成功</h5>
+                        <p v-cloak>{{cash}}<span> 元</span></p>
+                    </div>
+                    <a href="walletRecharge.html">充 值</a>
+                    <a href="walletWithdrawMoney.html">提 现</a>
+               </div>
+               <div class="my-bank-card">
+                   <h4>我的账户</h4>
+                   <span>银行卡</span>
+                   <a href="walletCard.html">管理</a>
+               </div>
+           </div>
+           <div class="order-data transaction-record">
+               <h3>交易记录</h3>
+               <table>
+                   <thead>
+                       <tr>
+                           <td>流水号</td>
+                           <td>日期</td>
+                           <td>交易名称类型</td>
+                           <td>收入(元)</td>
+                           <td>支出(元)</td>
+                           <td>交易状态</td>
+                       </tr>
+                   </thead>
+                   <tbody v-for="(item,index) in records">
+                       <tr>
+                           <td v-cloak :title="item.relationNo">{{item.relationNo | substr}}</td>
+                           <td v-cloak>{{item.actionTime | substr}}</td>
+                           <td v-cloak>{{item.actionType}}</td>
+                           <td v-cloak>{{item.incomeAmount}}</td>
+                           <td v-cloak>{{item.payAmount}}</td>
+                           <td v-cloak><div>成功</div></td>
+                       </tr>
+                       
+                        
+                   </tbody>
+               </table>
+               <div class="page">
+                    <el-pagination
+                        @size-change="handleSizeChange"
+                        @current-change="handleCurrentChange"
+                        :current-page="1"
+                        :page-sizes="[20, 100, 1000]"
+                        :page-size="20"
+                        layout="total, sizes, prev, pager, next, jumper"
+                        :total="pageCount">
+                    </el-pagination>
+                </div>
+               <!-- <div class="page">
+                    <a href="" class="pre-page">上一页</a>
+                    <a href="" class="page-list">1</a>
+                    <a href="" class="page-list">2</a>
+                    <a href="" class="page-list">3</a>
+                    <a href="" class="page-list">4</a>
+                    <a href="" class="page-list">5</a>
+                    <span class="page-more">...</span>
+                    <a href="" class="page-list">100</a>
+                    <a href="" class="next-page">下一页</a>
+                    <span>共100页，到第</span>
+                    <input type="text" />
+                    <span>页</span>
+                    <a href="" class="page-entrue">确定</a>
+               </div> -->
+           </div>
+        </div>
+  </div>
+  <div id="footer"></div>
+    <script type="text/javascript">
+        var headerHTML = template('header',{"headerState":2}); 
+        $('#header').html(headerHTML);
+        var footerHTML = template('footer',{}); 
+        $('#footer').html(footerHTML); 
+        
+       var wallet = new Vue({
+            el: '#wallet',
+            data: {
+                account:'',
+                trusteeship:'',
+                cash:'',
+                pageCount:0,
+                pageSize:20,
+                pageNum:1,
+                records:[]
+               
+            },
+            filters:{
+                substr:function(val){
+                   return val.substr(0,10);
+                }
+            },
+            mounted(){
+                console.log(localStorage);
+                var _this = this;
+                //用户信息
+                $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url: "/hriceSite/user/get-user",
+                    data: {},
+                    success: function (res) {
+                        var orgName,authFlag,provinceName,cityName,state;
+                        if(res.code==0){
+                            if(res.data.orgType==0){
+                                orgName="个人";
+                                state=0;
+                            }else{
+                                orgName="企业";
+                                state=2;
+                            }
+                            if(res.data.authFlag==0){
+                                authFlag="未认证";
+                            }else{
+                                authFlag="已认证";
+                            }
+                            if(res.data.provinceName){
+                                provinceName=res.data.provinceName;
+                            }else{
+                                provinceName="省份";
+                            }  
+                            if(res.data.provinceName){
+                                cityName=res.data.cityName;
+                            }else{
+                                cityName="城市";
+                            }    
+                            var data={"name":res.data.userName,"province":provinceName,"city":cityName,"State1":0,"State2":0,"State3":0,"State4":0,"State5":1,"State6":state,"State7":0,"State8":0,"orgName":orgName,"authFlag":authFlag} 
+                            var leftHTML = template('left',data); 
+                            $('#left').html(leftHTML);
+                        }
+                        
+                    },
+                    error : function() {
+                        console.log("异常");
+                    }
+                });   
+                //资产明细
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "/hriceSite/user/finance/my-asset",
+                    success: function (res) {
+                        console.log(res);
+                        if (res.code == 0) {
+                           _this.account=res.data.amountActivity;
+                            _this.trusteeship = res.data.amountFreeze;
+                            _this.cash = res.data.amountWithdraw;
+                        }
+                    },
+                    error : function() {
+                        console.log("异常");
+                    }
+                });   
+                //交易记录
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "/hriceSite/user/finance/detail-list",
+                    data: {"pageNum":_this.pageNum,"pageSize":_this.pageSize,"sort":0,"sortType":0},
+                    success: function (res) {
+                        console.log(res);
+                        if (res.code == 0) {
+                            _this.records = res.data.data;
+                            _this.pageCount=res.data.records;
+                        }
+                    },
+                    error : function() {
+                        console.log("异常");
+                    }
+                }); 
+               
+            },
+            methods: {
+                handleCurrentChange:function(val){
+                    var _this = this;
+                    _this.pageNum =  val; 
+                    console.log('当前页'+this.pageNum+'每页数'+this.pageSize);
+                     $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "/hriceSite/user/finance/detail-list",
+                        data: {"pageNum":_this.pageNum,"pageSize":_this.pageSize,"sort":0,"sortType":0},
+                        success: function (res) {
+                            console.log(res);
+                            if (res.code == 0) {
+                                _this.records = res.data.data;
+                                _this.pageCount=res.data.records;
+                            }
+                        },
+                        error : function() {
+                            console.log("异常");
+                        }
+                    }); 
+                },
+                handleSizeChange:function(val){
+                    var _this = this;
+                    _this.pageSize = val;
+                    console.log('当前页'+this.pageNum+'每页数'+this.pageSize);
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "/hriceSite/user/finance/detail-list",
+                        data: {"pageNum":_this.pageNum,"pageSize":_this.pageSize,"sort":0,"sortType":0},
+                        success: function (res) {
+                            console.log(res);
+                            if (res.code == 0) {
+                                _this.records = res.data.data;
+                                _this.pageCount=res.data.records;
+                            }
+                        },
+                        error : function() {
+                            console.log("异常");
+                        }
+                    });  
+                }  
+            }
+        })
+    </script>
+        
+</body>
+</html>
+
+

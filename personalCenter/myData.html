@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html>
+<head>    
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="author" content=""/>
+    <meta name="copyright" content=""/>
+    <title></title>    
+    <link rel="stylesheet" href="../css/swiper.3.2.0.min.css" type="text/css">
+    <link href="../css/style.css" rel="stylesheet" type="text/css">
+    <link href="../css/iconfont.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="../public/build/template.js" type="text/javascript"></script> 
+    <script src="../js/vue.js" type="text/javascript"></script> 
+    <script src="../js/jquery-1.12.4.min.js" type="text/javascript"></script> 
+    <script src="../js/layer.js" type="text/javascript"></script> 
+    <script src="../js/public.js" type="text/javascript"></script> 
+    <script src="../js/swiper.3.2.0.jquery.min.js" type="text/javascript"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+</head>
+<body>
+  <div id="header"></div>
+  <div class="main authentication clearfix">
+        <div id="left"></div>
+        <div class="authentication-form" id="data">
+            <div>
+                <h3>完善蓝聘账号信息</h3>
+                <p>资料齐全，提升竞争力</p>
+                <div class="authentication-data">
+                    <input type="text" placeholder="昵称" class="authentication-input" v-model="name"/>
+                    <div class="business-address">
+                        <div class="clearfix">
+                            <select v-model="provinceId" @click="changeArea(provinceId,1)">
+                                <option value="0">请选择</option>
+                                <option v-for="(item,index) in provinceList" :value="item.code">{{item.name}}</option>
+                            </select>
+                            <select v-model="cityId" @click="changeArea(cityId,2)">
+                                <option value="0">请选择</option>
+                                <option v-for="(item,index) in cityList" :value="item.code">{{item.name}}</option>
+                            </select>
+                            <select v-model="areaId">
+                                <option value="0">请选择</option>
+                                <option v-for="(item,index) in areaList" :value="item.code" >{{item.name}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="show-text">
+                        <textarea v-model="brief" placeholder="介绍展现您的魅力"></textarea>
+                        
+                    </div>
+                    <div class="add-modular clearfix"><span>项目经验</span><i class="iconfont icon-jiahao" @click="addProject"></i></div>
+                    <div class="project-modular" v-for="(item,index) in projects">
+                        <div class="del-modular clearfix">
+                            <input type="text" placeholder="职业/项目名称" class="authentication-input" v-model="item.name"/>
+                            <i class="iconfont icon-shanchu" @click="removeProject(index)"></i>
+                        </div>
+                        <div class="project-time clearfix">
+                            <!-- <input type="text" placeholder="项目开始时间" v-model="item.startTime"/> -->
+                             <!-- <input type="text" placeholder="项目结束时间" v-model="item.stopTime"/> -->
+                            <el-date-picker
+                                v-model="item.startTime"
+                                type="date"
+                                placeholder="项目开始时间"
+                                format="yyyy 年 MM 月 dd 日"
+                                value-format="yyyy-MM-dd"
+                                >
+                            </el-date-picker>
+                            <el-date-picker
+                                v-model="item.endTime"
+                                type="date"
+                                placeholder="项目结束时间"
+                                format="yyyy 年 MM 月 dd 日"
+                                value-format="yyyy-MM-dd"
+                                >
+                            </el-date-picker>
+                           
+                        </div>
+                        <div class="show-text">
+                            <textarea v-model="item.projDesc" placeholder="项目描述"></textarea>
+                        </div>
+                    </div>
+                    <div class="del-modular clearfix">
+                        <input type="text" maxlength="5" placeholder="标签，最多5个，每个最多6个字" v-model="label"/>
+                        <i class="iconfont icon-jiahao" @click="addLabel"></i>
+                    </div>
+                    <div class="label-modular clearfix">
+                        <span v-for="(item,index) in labels">{{item.name}}<i class="iconfont icon-shanchu" @click="removeLabel(index)"></i></span>
+                    </div>
+                    
+                    <div class="add-modular clearfix"><span>行业与年限</span></div>
+                    <div class="project-select clearfix">
+                        <select v-model="industryName">
+                            <option value="0">您的行业</option>
+                            <option v-for="(item,index) in industryList" :value="item.name">{{item.name}}</option>
+                        </select>
+                        <select v-model="workYearsName">
+                            <option value="0">工作年限</option>
+                            <option v-for="(item,index) in industryYearList" :value="item.name">{{item.name}}</option>
+                        </select>
+                    </div>    
+                    <div class="add-modular clearfix"><span>教育背景</span><i class="iconfont icon-jiahao" @click="addEducation"></i></div>
+                    <div class="project-modular" v-for="(item,index) in educations">
+                        <div class="del-modular clearfix">
+                            <input type="text" placeholder="学校" v-model="item.schoolName"/>
+                            <i class="iconfont icon-shanchu" @click="removeEducation(index)"></i>
+                        </div>
+                        <div class="project-time clearfix">
+                            <!-- <input type="text" placeholder="开始时间" v-model="item.educationTime1"/>
+                            <input type="text" placeholder="结束时间" v-model="item.educationTime2"/> -->
+                            <el-date-picker
+                                v-model="item.startDate"
+                                type="date"
+                                placeholder="开始时间"
+                                format="yyyy 年 MM 月 dd 日"
+                                value-format="yyyy-MM-dd"
+                                >
+                            </el-date-picker>
+                            <el-date-picker
+                                v-model="item.endDate"
+                                type="date"
+                                placeholder="结束时间"
+                                format="yyyy 年 MM 月 dd 日"
+                                value-format="yyyy-MM-dd"
+                                >
+                            </el-date-picker>
+                        </div>
+                        <div class="project-select qualification-select clearfix">
+                            <select v-model="item.qualificationName">
+                                <option value="0">学历</option>
+                                <option v-for="(i,index) in educationList" :value="i.name">{{i.name}}</option>
+                            </select>
+                            <input type="text" placeholder="专业" class="authentication-input" v-model="item.profession"/>
+                            
+                        </div>  
+                    </div>
+                    
+                    <a href="javascript:;" @click="submit">保 存</a>
+                </div>
+
+            </div>
+        </div>
+  </div>
+  <div id="footer"></div>
+    
+    <script type="text/javascript">
+       var headerHTML = template('header',{"headerState":2}); 
+        $('#header').html(headerHTML);
+        var footerHTML = template('footer',{}); 
+        $('#footer').html(footerHTML); 
+        
+       var data = new Vue({
+            el: '#data',
+            data: {
+               industryList:[],
+               industryYearList:[],
+               provinceList:[],
+               cityList:[],
+               areaList:[],
+               educationList:[],
+               provinceId:'0',
+               cityId:'0',
+               areaId:'0',
+               provinceName:'',
+               cityName:"",
+               areaName:'',
+               name:'',
+               brief:'',
+               projects:[
+                 {
+                    name:'',
+                    startTime:'',
+                    endTime:'',
+                    projDesc:''
+                 }
+               ],
+               label:'',
+               labels:[
+                   
+               ],
+               industryName:'0',
+               workYearsName:'0',
+               educations:[
+                   {
+                    schoolName:'',
+                    startDate:'',
+                    endDate:'',
+                    qualificationName:'0',
+                    profession:'',
+                    
+                   }
+               ],
+            },
+            filters:{
+               
+            },
+            mounted(){
+                var _this=this;
+                //部门年限
+                $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url: "/hriceSite/user/fillUserInit",
+                    data: {},
+                    success: function (res) {
+                        console.log(res);
+                        if(res.code==0){
+                            _this.industryList = res.data.industryList;
+                            _this.industryYearList = res.data.industryYearList;
+                            _this.educationList= res.data.educationList;
+                        }
+                        
+                    },
+                    error : function() {
+                        console.log("异常");
+                    }
+                });  
+                 //用户信息
+                 $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url: "/hriceSite/user/get-user",
+                    data: {},
+                    success: function (res) {
+                        var orgName,authFlag,provinceName,cityName,state;
+                        if(res.code==0){
+
+                            _this.name=res.data.nickName;
+                            _this.brief=res.data.brief;
+                            //_this.projects=res.data.project;
+                             _this.labels=res.data.tag;
+                             _this.industryName=res.data.experience[0].industryName;
+                            _this.workYearsName=res.data.experience[0].workYearsName;
+                             //_this.educations=res.data.education;
+
+                            _this.provinceId=res.data.provinceCode;
+                            _this.cityId=res.data.cityCode;
+                            _this.areaId=res.data.areaCode;
+                            _this.changeDefauleCity(_this.provinceId,1,_this.cityId);
+                            _this.changeDefauleCity(_this.cityId,2,_this.areaId);   
+                            if(res.data.orgType==0){
+                                orgName="个人";
+                                state=0;
+                            }else{
+                                orgName="企业";
+                                state=2;
+                            }
+                            if(res.data.authFlag==0){
+                                authFlag="未认证";
+                            }else{
+                                authFlag="已认证";
+                            }
+                            if(res.data.provinceName){
+                                provinceName=res.data.provinceName;
+                            }else{
+                                provinceName="省份";
+                            }  
+                            if(res.data.provinceName){
+                                cityName=res.data.cityName;
+                            }else{
+                                cityName="城市";
+                            }    
+                            
+                            var data={"name":res.data.userName,"province":provinceName,"city":cityName,"State1":1,"State2":0,"State3":0,"State4":0,"State5":0,"State6":state,"State7":0,"State8":0,"orgName":orgName,"authFlag":authFlag} 
+                            var leftHTML = template('left',data); 
+                            $('#left').html(leftHTML);
+                        }
+                        
+                    },
+                    error : function() {
+                        console.log("异常");
+                    }
+                });  
+                //省列表
+                $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url: "/hriceSite/address/address",
+                    data: {},
+                    success: function (res) {
+                        console.log(res);
+                        if (res.code == 0) {
+                            _this.provinceList=res.data;
+                        }
+                    },
+                    error : function() {
+                        console.log("异常");
+                    }
+                }); 
+                
+            },
+            methods: {
+                changeDefauleCity:function(id,num,defaultId){
+                    //查询下级城市
+                   var _this = this;
+                    if(this.provinceId=="0"){
+                        this.cityId="0";
+                        this.cityList=[];
+                        this.areaId="0";
+                        this.areaList=[];
+                        return;
+                    }
+                    $.ajax({
+                        type: "GET",
+                        dataType: "json",
+                        url: "/hriceSite/address/address",
+                        data: {"code":id},
+                        success: function (res) {
+                            console.log(res);
+                            if (res.code == 0) {
+                               switch(num){
+                                   case 1:_this.cityList=res.data;_this.cityId=defaultId;break;
+                                   case 2:_this.areaList=res.data;_this.areaId=defaultId;break;
+                               }
+                            }
+                        },
+                        error : function() {
+                            console.log("异常");
+                        }
+                    }); 
+                   
+                },
+                changeArea:function(code,num){
+                    var _this=this;
+                    if(num==1){
+                        if(this.provinceId=="0"){
+                            this.cityId="0";
+                            this.cityList=[];
+                            this.areaId="0";
+                            this.areaList=[];
+                            return;
+                        }
+                    }
+                    if(num==2){
+                        if(this.cityId=="0"){
+                            this.areaId="0";
+                            this.areaList=[];
+                            return;
+                        }
+                    }
+                    $.ajax({
+                        type: "GET",
+                        dataType: "json",
+                        url: "/hriceSite/address/address",
+                        data: {"code":code},
+                        success: function (res) {
+                            console.log(res);
+                            if (res.code == 0) {
+                                if(num==1){
+                                    _this.cityList=res.data;_this.cityId=0;_this.areaId=0;_this.areaList = [];
+                                }else if(num==2){
+                                    _this.areaList=res.data;_this.areaId=0;
+                                }   
+                               
+                            }
+                        },
+                        error : function() {
+                            console.log("异常");
+                        }
+                    }); 
+                },
+                addLabel:function(){
+                    if(this.label==""){
+                        layer.msg("请输入内容");
+                        return;
+                    }
+                    if(this.labels.length<5){
+                        this.labels.push( {
+                            name:this.label
+                        })
+                    }
+                    
+                },
+                removeLabel:function(index){
+                    this.labels.splice(index,1);
+                },
+                addProject:function(){
+                    this.projects.push({
+                        name:'',
+                        startTime:'',
+                        endTime:'',
+                        projDesc:''
+                 })
+                },
+                removeProject:function(index){
+                    this.projects.splice(index,1);
+                },
+                addEducation:function(){
+                    this.educations.push({
+                        schoolName:'',
+                        startDate:'',
+                        endDate:'',
+                        qualificationId:'0',
+                        major:''
+                   })
+                },
+                removeEducation:function(index){
+                    this.educations.splice(index,1);
+                },
+                submit:function(){
+                    var _this = this;
+                    if(this.name==""){
+                        layer.msg("请输入名称!");
+                        return;
+                    }
+                    if(this.provinceId==""){
+                        layer.msg("请选择省份");
+                        return;
+                    }
+                    if(this.cityId==""){
+                        layer.msg("请选择城市");
+                        return;
+                    }
+                    for(var i=0;i<this.provinceList.length;i++){
+                        if(this.provinceList[i].code==this.provinceId){
+                            this.provinceName=this.provinceList[i].name;
+                        }
+                    }
+                    for(var j=0;j<this.cityList.length;j++){
+                        
+                        if(this.cityList[j].code==this.cityId){
+                            this.cityName=this.cityList[j].name;
+                        }
+                    }
+                    for(var k=0;k<this.areaList.length;k++){
+                        if(this.areaList[k].code==this.areaId){
+                            this.areaName=this.areaList[k].name;
+                        }
+                    }  
+                  var data={"nickName": _this.name,"areaCode": _this.areaId,"areaName": _this.areaName,"cityCode": _this.cityId,"cityName": _this.cityName,"provinceCode": _this.provinceId,"provinceName": _this.provinceName,"brief": _this.brief,"education":_this.educations,"tag":_this.labels,"industryName":_this.industryName,"workYearsName":_this.workYearsName,"project":_this.projects}
+                    console.log(data);
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "/hriceSite/user/fill-userInfo",
+                        data: JSON.stringify(data),
+                        contentType: 'application/json',
+                        success: function (res) {
+                            console.log(res);
+                            layer.msg(res.message);
+                        },
+                        error : function() {
+                            console.log("异常");
+                        }
+                    }); 
+                }
+            }
+        })
+    </script>
+        
+</body>
+</html>
+
+

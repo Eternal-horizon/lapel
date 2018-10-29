@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>    
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="author" content=""/>
+    <meta name="copyright" content=""/>
+    <title></title>    
+    <link rel="stylesheet" href="../css/swiper.3.2.0.min.css" type="text/css">
+    <link href="../css/style.css" rel="stylesheet" type="text/css">
+    <link href="../css/iconfont.css" rel="stylesheet" type="text/css">
+    <script src="../public/build/template.js" type="text/javascript"></script> 
+    <script src="../js/vue.js" type="text/javascript"></script> 
+    <script src="../js/jquery-1.12.4.min.js" type="text/javascript"></script> 
+    <script src="../js/layer.js" type="text/javascript"></script> 
+    <script src="../js/public.js" type="text/javascript"></script> 
+    <script src="../js/swiper.3.2.0.jquery.min.js" type="text/javascript"></script>
+</head>
+<body>
+   <div id="header"></div>
+   <div class="main my-message" id="message">
+       <div class="message-head">
+           <div>
+               <div style="background:url('../images/user.png') no-repeat center;background-size:cover;"></div>
+               <p v-cloak><span>{{contactUser}}<i>{{natureName }}</i></span></p>
+           </div>
+       </div>
+       <div class="my-message-main clearfix">
+            <div class="my-message-nav">
+                <a href="" class="hover">基本信息</a>
+                <a href="">联系信息</a>
+            </div>
+            <div class="base-message">
+                <div>
+                    <h3>基本信息</h3>
+                    <div>
+                        <span>行业领域</span>
+                        <div v-cloak>{{tradeFieldFirstLevelName}} {{tradeFieldSecondLevelName}}</div>
+                    </div>
+                    <div>
+                        <span>企业规模</span>
+                        <div v-cloak>{{scaleName}}</div>
+                    </div>
+                    <div>
+                        <span>企业性质</span>
+                        <div v-cloak>{{natureName}}</div>
+                    </div>
+                    
+                </div>
+                <div>
+                    <h3>联系信息</h3>
+                    <div>
+                        <span>联系人</span>
+                        <div v-cloak>{{contactUser}}</div>
+                    </div>
+                    <div>
+                        <span>联系号码</span>
+                        <div v-cloak>{{phone}}</div>
+                    </div>
+                    <div>
+                        <span>固定电话</span>
+                        <div v-cloak>{{contactMobile}}</div>
+                    </div>
+                    <div>
+                        <span>联系邮箱</span>
+                        <div v-cloak>{{email}}</div>
+                    </div>
+                    <div>
+                        <span>所在地</span>
+                        <div v-cloak>{{provinceName}}{{cityName}}{{areaName}}</div>
+                    </div>
+                    <div>
+                        <span>企业描述</span>
+                        <div v-cloak>
+                            {{companyDesc}}
+                    
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+       </div>
+   </div>
+   <div id="footer"></div>
+   
+    <script type="text/javascript">
+        var headerHTML = template('header',{}); 
+        $('#header').html(headerHTML);
+        var footerHTML = template('footer',{}); 
+        $('#footer').html(footerHTML); 
+       var message = new Vue({
+            el: '#message',
+            data: {
+               tradeFieldFirstLevelName:'',
+               tradeFieldSecondLevelName:'',
+               scaleName:'',
+               natureName:'',
+               contactUser:'',
+               phone:'',
+               contactMobile:'',
+               email:'',
+               provinceName:'',
+               cityName:'',
+               areaName:'',
+               companyDesc:''
+            },
+            filters:{
+               
+            },
+            mounted(){
+                var _this = this;
+                //需求详情
+                $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url: "/hriceSite/user/get-user",
+                    data:{},
+                    success: function (res) {
+                        console.log(res);
+                        if (res.code == 0) {
+                            _this.tradeFieldFirstLevelName =res.data.tradeFieldFirstLevelName;
+                            _this.tradeFieldSecondLevelName  =res.data.tradeFieldSecondLevelName ;
+                            _this.politicalStatusName=res.data.politicalStatusName;
+                            _this.scaleName=res.data.scaleName;
+                            _this.natureName =res.data.natureName;
+
+                            _this.contactUser =res.data.contactUser;
+                            _this.phone  =res.data.phone ;
+                            _this.contactMobile=res.data.contactMobile;  
+                            _this.email=res.data.email;  
+                            _this.provinceName=res.data.provinceName;  
+                            _this.cityName =res.data.cityName;  
+                            _this.areaName =res.data.areaName; 
+                            _this.companyDesc =res.data.companyDesc; 
+                            
+                        }
+                    },
+                    error : function() {
+                        console.log("异常");
+                    }
+                });  
+                
+                
+            },
+            methods: {
+
+            }
+        })
+    </script>
+        
+</body>
+</html>
+
+

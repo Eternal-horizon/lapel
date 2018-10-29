@@ -1,0 +1,62 @@
+<div class="authentication-nav">
+    <div class="my-home">               
+        <div style="background:url('../images/user.png') no-repeat center;background-size:cover;"></div>
+        <div class="home-name">{{name}}</div>
+        <div class="home-address">{{province}} | {{city}}</div>
+        <a href="../home/myMessage.html" class="home-link"><i class="iconfont icon-zhuye"></i>我的主页</a>
+        {{if State1==0}}
+        <a href="myData.html" class="modify-data">修改我的资料</a>
+        {{else if State1==1}}
+        <a href="myData.html" class="modify-data hover">修改我的资料</a>
+        {{/if}}
+        <span class="home-tips">{{orgName}}</span>
+    </div>
+    <div class="home-nav">
+        {{if State2==0}}
+        <a href="workbench.html" >工作台</a>
+        {{else if State2==1}}
+        <a href="workbench.html" class="hover">工作台</a>
+        {{/if}}
+        {{if State3==0}}
+        <a href="taskList.html">我的订单</a>
+        {{else if State3==1}}
+        <a href="taskList.html" class="hover">我的订单</a>
+        {{/if}}
+        {{if State4==0}}
+        <a href="demandList.html">我的需求</a>
+        {{else if State4==1}}
+        <a href="demandList.html" class="hover">我的需求</a>
+        {{/if}}
+        
+    </div>
+    <div class="home-nav">
+        {{if State5==0}}
+        <a href="myWallet.html">我的钱包</a>
+        {{else if State5==1}}
+        <a href="myWallet.html" class="hover">我的钱包</a>
+        {{/if}}
+        {{if State6==0}}
+        <a href="myCertification.html">我的认证 <span>未认证</span></a>
+        {{else if State6==1}}
+        <a href="myCertification.html"  class="hover">我的认证 <span>{{authFlag}}</span></a>
+        {{else if State6==2}}
+        <a href="companyCertification.html">我的认证 <span>{{authFlag}}</span></a>
+        {{else if State6==3}}
+        <a href="companyCertification.html"  class="hover">我的认证 <span>{{authFlag}}</span></a>
+        {{/if}}
+        
+        {{if State7==0}}
+        <a href="accountSecurity.html">账号安全</a>
+        {{else if State7==1}}
+        <a href="accountSecurity.html"  class="hover">账号安全</a>
+        {{/if}}
+        {{if State8==0}}
+        <a href="appeal.html" >申诉处理</a>
+        {{else if State8==1}}
+        <a href="appeal.html"  class="hover">申诉处理</a>
+        {{/if}}
+        
+        
+        
+    </div>
+</div>

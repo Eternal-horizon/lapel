@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>    
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="author" content=""/>
+    <meta name="copyright" content=""/>
+    <title></title>    
+    <link rel="stylesheet" href="../css/swiper.3.2.0.min.css" type="text/css">
+    <link href="../css/style.css" rel="stylesheet" type="text/css">
+    <link href="../css/iconfont.css" rel="stylesheet" type="text/css">
+    <script src="../public/build/template.js" type="text/javascript"></script> 
+    <script src="../js/vue.js" type="text/javascript"></script> 
+    <script src="../js/jquery-1.12.4.min.js" type="text/javascript"></script> 
+    <script src="../js/layer.js" type="text/javascript"></script> 
+    <script src="../js/public.js" type="text/javascript"></script> 
+    <script src="../js/swiper.3.2.0.jquery.min.js" type="text/javascript"></script>
+</head>
+<body>
+  <div id="header"></div>
+  <div class="detail main" id="detail">
+        <div class="catalog"><a href="demand.html" class="hover">需求大厅 </a>><a href="serviceDemand.html">专线管理1.0产品开发</a></div>
+        <div class="clearfix detail-main">
+            <div class="detail-left">
+                <div class="detail-describe">
+                    <div class="detail-title" v-cloak>{{name}}<span>软硬件开发</span></div>
+                    <div class="clearfix detail-section">
+                        <div class="detail-condition"  v-cloak>
+                            <div>需要人数：1 人</div>
+                            <div v-cloak>需要地点：{{provinceName}} - {{cityName}}</div>
+                            <div v-cloak>期望完成时间：{{expectDay}} 天</div>
+                            <div v-cloak>报名截止日期：{{endTime}} </div>
+                            <div v-cloak>发布时间：{{publicTime}}</div>
+                        </div>
+                        <div class="detail-price">
+                            <div>￥237000.00</div>
+                        
+                            <a href="javascript:;" v-if="status==0" @click="handle(id,0)" class="hover">取消报名</a>
+                            <a href="javascript:;" v-if="status==1" @click="handle(id,1)" class="hover">不想做了</a>
+                            <a href="javascript:;" v-if="status==2" @click="handle(id,2)" class="hover">完成</a>
+                            <a href="javascript:;" v-if="status==3" @click="handle(id,3)" class="hover">催一催</a>
+                            <div class="detail-modify" v-if="status==4">
+                                <a href="javascript:;" @click="handle(id,61)">修改</a>
+                                <a href="javascript:;" @click="handle(id,62)">申诉</a>
+                            </div>
+                            <!-- <a href="javascript:;" class="">已选满</a>
+                            <a href="javascript:;" class="hover">取消报名</a>
+                            <a href="javascript:;" class="hover">不想做了</a>
+                            <a href="javascript:;" class="hover">完成</a>
+                            <a href="javascript:;" class="hover">删除</a>
+                            <div class="detail-modify">
+                                <a href="" >修改</a>
+                                <a href="" >申诉</a>
+                            </div> -->
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="demand-detail-content">
+                    <div class="demand-description-tab clearfix">
+                        <a href="javascript:;" :class="{'hover': !showDemand}" @click="toggle(0)">需求描述</a>
+                        <a href="javascript:;" :class="{'hover': showDemand}" @click="toggle(1)">报名（）</a>
+                    </div>    
+                    <div class="requirement-description" v-html="demandDesc" v-if="!showDemand">
+                        <!-- <p>1.甲方提供Oracle 数据库损坏后的数据库修复服务，修复后保证该数据库未受损害的数据，即只要数据表中的数据块包括坏块其中数据未被清空或物理毁灭，就可以将其中的有用部分恢复出来。数据库名为ORCL1。</p>
+                        <p>2. 服务费用：本合同总金额共计￥10000.00 （大写：人民币壹万捌仟圆整），项目完成后7个工作日内结清全款。</p>
+                        <p>3.该数据库环境确实没有任何有效的数据库物理或逻辑备份下的特殊恢复服务合同，由于特殊恢复为基于损坏的磁盘或数据文件现有状态的数据恢复，其数据恢复比例受限于未损坏的数据块和未被覆盖重用数据块的比例，特殊恢复不保证恢复100%的数据，基于现有情况经双方友好协定，乙方保证修复后保证该数据库至少恢复该数据库中所有损坏的数据表中，只要数据表中的数据块包括坏块其中数据未被清空或物理毁灭，就可以将其中的有用部分恢复出来。</p> -->
+                    </div>
+                    <div class="demand-enroll" v-if="showDemand" v-cloak>
+                            
+                            <div class="demand-select">
+                                <a href="javascript:;" :class="num==0 ? 'hover' : ''" @click="setType(0)">全部</a> <span>|</span> <a href="javascript:;" :class="num==1 ? 'hover' : ''" @click="setType(1)">已选中</a> <span>|</span> <a href="javascript:;" :class="num==2 ? 'hover' : ''" @click="setType(2)">未选中</a> 
+                            </div>
+                            <div class="enroll">
+                                <div class="enroll-list clearfix" v-for="(item,index) in demandList">
+                                    <div style="background:url('../images/user.png') no-repeat center;background-size:cover;"></div>
+                                    <div class="enroll-main">
+                                        <div class="enroll-title clearfix">
+                                            <span v-cloak>{{item.name}}</span>
+
+                                            <a v-if="item.demandStatus==0" v-cloak href="" class="hover">未选中</a>
+                                            <a v-if="item.demandStatus==1" v-cloak href="" class="hover">已选中</a>
+                                        </div>
+                                        <div class="enroll-message">
+                                            <span v-cloak>地点：{{item.cityName}}</span>
+                                            <span v-cloak>申请时间：{{item.publicTime}}</span>
+                                        </div>
+                                        <p class="two-line">{{item.demandDesc}}</p>
+                                    </div>
+                                    
+                                </div>
+                                
+                            </div>
+                    </div>
+                </div>
+            </div>
+            <div class="detail-right">
+                <h4>需求方信息</h4>
+                <div class="demand-side clearfix">
+                    <div style="background:url('../images/user.png') no-repeat center;background-size:cover;"></div>
+                    <div class="demand-side-info">
+                        <h5>上海谦喜信息科技有限公司</h5>
+                        <div class="detail-label"><span>企业</span></div>
+                        <p>企业规模：人</p>
+                        <p>行业：</p>
+                        <div class="">
+                            <img src="../images/authentication.png" />
+                            <img src="../images/phone.png" />
+                            <img src="../images/mail.png" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+  </div>
+  <div id="footer"></div>
+    
+    <script type="text/javascript">
+         var headerHTML = template('header',{}); 
+        $('#header').html(headerHTML);
+        var footerHTML = template('footer',{}); 
+        $('#footer').html(footerHTML); 
+        //发布需求，发包者
+        var detail = new Vue({
+            el: '#detail',
+            data: {
+               name:'',
+               demandDesc:'',
+               endTime:'',
+               expectDay:'',
+               publicTime:'',
+               budget:'',
+               provinceName:'',
+               cityName:'',
+               budget:'',
+               showDemand:false,
+               status:'',
+               demandList:[],
+               num:0,
+               id=""
+
+            },
+            filters:{
+               
+            },
+            mounted(){
+                var _this = this;
+                Request = GetRequest(); 
+                var id = Request['id']; 
+                this.id=id;
+                console.log(id);
+                //需求详情
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "/hriceSite/demand/detail",
+                    data:{"demandId":id},
+                    success: function (res) {
+                        console.log(res);
+                        if (res.code == 0) {
+                            _this.name=res.data.name;
+                            _this.status=res.data.status;
+                            _this.endTime=res.data.endTime;
+                            _this.expectDay=res.data.expectDay;
+                            _this.publicTime=res.data.publicTime;
+                            _this.budget=res.data.budget;
+                            _this.provinceName=res.data.provinceName;
+                            _this.cityName =res.data.cityName ;
+                            _this.budget=res.data.budget;    
+                            _this.demandStatus=res.data.demandStatus;
+
+                        }
+                    },
+                    error : function() {
+                        console.log("异常");
+                    }
+                });  
+                //报名列表
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "/hriceSite/demand/demand-list",
+                    data: {"pageNum":1,"pageSize":3,"sort":0,"sortType":0},
+                    success: function (res) {
+                        console.log(res);
+                        if (res.code == 0) {
+                            _this.demandList = res.data.data;
+                            
+                        }
+                    },
+                    error : function() {
+                        console.log("异常");
+                    }
+                }); 
+                
+            },
+            methods: {
+                handle:function(id,num){
+                    var url;
+                    if(num==0){
+                        url = "/hriceSite/user/demand/cancel";
+                    }else if(num==1){
+                        url = "/hriceSite/user/demand/cancel";
+                    }else if(num==2){
+                        url = "/hriceSite/user/demand/complete";
+                    }else if(num==3){
+                       return;
+                    }else if(num==61){
+                        url = "/hriceSite/user/demand/modify";
+                    }else if(num==62){
+                        location.href="../personalCenter/appeal.html"
+                    }
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: url,
+                        data: {"demandId":id},
+                        success: function (res) {
+                            console.log(res);
+                            if (res.code == 0) {
+                                layer.msg(res.message);
+                            }
+                        },
+                        error : function() {
+                            console.log("异常");
+                        }
+                    }); 
+                },
+                toggle:function(num){
+                    num==0?this.showDemand=false:this.showDemand=true;
+                },
+                setType:function(num){
+                    this.num = num;
+                    var _this = this;
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "/hriceSite/demand/demand-list",
+                        data: {"demandStatus":num,"pageNum":1,"pageSize":3,"sort":0,"sortType":0},
+                        success: function (res) {
+                            console.log(res);
+                            if (res.code == 0) {
+                                _this.demandList = res.data.data;
+                               
+                            }
+                        },
+                        error : function() {
+                            console.log("异常");
+                        }
+                    }); 
+                },
+            }
+        })
+        
+    </script>
+        
+</body>
+</html>
+
+

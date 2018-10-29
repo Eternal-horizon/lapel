@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>    
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="author" content=""/>
+    <meta name="copyright" content=""/>
+    <title></title>    
+    <link rel="stylesheet" href="../css/swiper.3.2.0.min.css" type="text/css">
+    <link href="../css/style.css" rel="stylesheet" type="text/css">
+    <link href="../css/iconfont.css" rel="stylesheet" type="text/css">
+    <script src="../public/build/template.js" type="text/javascript"></script>  
+    <script src="../js/vue.js" type="text/javascript"></script> 
+    <script src="../js/jquery-1.12.4.min.js" type="text/javascript"></script> 
+    <script src="../js/layer.js" type="text/javascript"></script> 
+    <script src="../js/public.js" type="text/javascript"></script> 
+    <script src="../js/swiper.3.2.0.jquery.min.js" type="text/javascript"></script>
+    <!--[if lte IE 9]>
+        <script src="js/respond.min.js" type="text/javascript"></script>
+        <script src="js/html5shiv-printshiv.min.js" type="text/javascript"></script>
+    <![endif]-->    
+</head>
+<body>
+  <div id="header"></div>
+  <div class="main authentication clearfix">
+        <div id="left"></div>
+        <div class="account" id="account">
+            <div class="account-head"><a href="myWallet.html">我的钱包</a>  >  <a href="/">充值</a></div>
+            <div class="account-main clearfix">
+                <div class="account-left">
+                    <h3>账户充值</h3>
+                    <div class="account-name"><span>充值账户:</span>{{name}}</div>
+                    <div class="account-input">
+                        <span>充值金额:</span>
+                        <input type="text" placeholder="请输入充值金额" v-model="recharge"/>
+                        元
+                    </div>
+                    <div class="account-input">
+                        <span>银行卡:</span>
+                        <select v-model="bankCard">
+                            <option value="0">请选择您行卡</option>
+                            <option  v-bind:value="item.id" v-for="(item,index) in banks" >{{item.bankCard}}</option>
+                        </select>
+                        <a href="walletCard.html">新增</a>
+                    </div>
+                    <p>请仔细阅读<span>《如何充值》</span>规则</p>
+                    <a href="javascaript:;" @click="submit">我已转账</a>
+                </div>
+                <div class="account-right">
+                    <h4>如何充值：</h4>
+                    <p>1.为了您的账户安全，本平台充值是通过用户线下打款到平台账户，平台核实后，增加您的余额方式来进行充值；</p>
+                    <p>2.请您打款至平台账户：蓝聘集团平台卡号：6217 0000 0000 0234 213  ，请您打款之前，仔细确认打款账号是否一致，打款完成后，请填写充值金额，和选择转账时使用的银行卡并点击我已转账，平台会在1个工作日内为您核实并增加您的余额，请您耐心等待；</p>
+                    <p>3.如您有任何疑问，请联系客服热线 400-180-8333</p>
+                </div>
+            </div>
+        </div>
+  </div>
+  <div id="footer"></div>
+   
+    <script type="text/javascript">
+        var headerHTML = template('header',{"headerState":2}); 
+        $('#header').html(headerHTML);
+        var footerHTML = template('footer',{}); 
+        $('#footer').html(footerHTML); 
+        
+       var account = new Vue({
+            el: '#account',
+            data: {
+                recharge:'',
+                bankCard:'0',
+                banks:[],
+                name:''
+            },
+            mounted(){
+                var _this = this;
+                 //用户信息
+                 $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url: "/hriceSite/user/get-user",
+                    data: {},
+                    success: function (res) {
+                        var orgName,authFlag,provinceName,cityName,state;
+                        if(res.code==0){
+                            _this.name=res.data.userName;
+                            if(res.data.orgType==0){
+                                orgName="个人";
+                                state=0;
+                            }else{
+                                orgName="企业";
+                                state=2;
+                            }
+                            if(res.data.authFlag==0){
+                                authFlag="未认证";
+                            }else{
+                                authFlag="已认证";
+                            }
+                            if(res.data.provinceName){
+                                provinceName=res.data.provinceName;
+                            }else{
+                                provinceName="省份";
+                            }  
+                            if(res.data.provinceName){
+                                cityName=res.data.cityName;
+                            }else{
+                                cityName="城市";
+                            }    
+                            var data={"name":res.data.userName,"province":provinceName,"city":cityName,"State1":0,"State2":0,"State3":0,"State4":0,"State5":1,"State6":state,"State7":0,"State8":0,"orgName":orgName,"authFlag":authFlag} 
+                            var leftHTML = template('left',data); 
+                            $('#left').html(leftHTML);
+                        }
+                        
+                    },
+                    error : function() {
+                        console.log("异常");
+                    }
+                });  
+                $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url: "/hriceSite/user/bank-account",
+                    success: function (res) {
+                        console.log(res);
+                        if (res.code == 0) {
+                           _this.banks = res.data;
+                        }
+                    },
+                    error : function() {
+                        console.log("异常");
+                    }
+                });   
+                
+            },
+            methods: {
+                submit:function(){
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "/hriceSite/user/finance/recharge",
+                        data: {"rechargeAmount":this.recharge,"accountId":this.bankCard},
+                        success: function (res) {
+                            console.log(res);
+                            if (res.code == 0) {
+                                layer.msg('转账成功');  
+                            }
+                        },
+                        error : function() {
+                            console.log("异常");
+                        }
+                    });    
+                }
+            }
+        })
+    </script>
+        
+</body>
+</html>
+
+

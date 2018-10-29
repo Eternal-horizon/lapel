@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>    
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="author" content=""/>
+    <meta name="copyright" content=""/>
+    <title></title>    
+    <link rel="stylesheet" href="../css/swiper.3.2.0.min.css" type="text/css">
+    <link href="../css/style.css" rel="stylesheet" type="text/css">
+    <link href="../css/iconfont.css" rel="stylesheet" type="text/css">
+    <script src="../public/build/template.js" type="text/javascript"></script> 
+    <script src="../js/vue.js" type="text/javascript"></script> 
+    <script src="../js/jquery-1.12.4.min.js" type="text/javascript"></script> 
+    <script src="../js/layer.js" type="text/javascript"></script> 
+    <script src="../js/public.js" type="text/javascript"></script> 
+    <script src="../js/swiper.3.2.0.jquery.min.js" type="text/javascript"></script>
+</head>
+<body>
+   <div id="header"></div>
+   <div class="main my-message" id="message">
+       <div class="about-head">
+           <img src="../images/about.png" />
+       </div>
+       <div class="my-message-main clearfix" >
+            <div class="my-message-nav">
+                <a href="aboutUs.html" >关于我们</a>
+                <a href="joinUs.html">加入我们</a>
+                <a href="contactUs.html">联系我们</a>
+                <a href="agreement.html">交易规则</a>
+                <a href="legalNotice.html" class="hover">法律声明</a>
+                <a href="interlocution" >常见问题</a>
+            </div>
+            <div class="legal-notice">
+                <h3>法律声明</h3>
+                <p>收稻提醒您：在使用收稻平台各项服务前，请您务必仔细阅读并透彻理解本声明。您可以选择不使用收稻平台服务，但如果您选择使用收稻平台服务，您的所有使用行为将被视为对本声明全部内容的认可。“收稻平台”指由苏州欧孚科技股份有限公司（简称“收稻”）运营的众包平台，域名为shoudaozi.com以及收稻启用的其他域名。
+                    收稻平台上关于收稻平台会员或其发布的相关服务信息（包括但不限于名称、 联系人及联络信息，产品的描述和说明，相关图片、视讯等的信息）均由会员自行提供，会员依法应对其提供的任何信息承担全部责任。 任何单位或个人认为收稻平台网页内容（包括但不限于收稻平台会员发布的服务信息）可能涉嫌侵犯其合法权益，应该及时向收稻提出书面权利通知，并提供身份证明、权属证明、具体链接（URL）及详细侵权情况证明。收稻在收到上述法律文件后，将会依法尽快移除相关涉嫌侵权的内容。
+                    收稻平台转载的作品（包括论坛内容）出于传递更多信息之目的，并不意味收稻平台（包括收稻平台关联企业）赞同其观点或证实其内容的真实性。收稻尊重合法版权，反对侵权盗版。</p>
+                <h4>一、知识产权声明</h4>
+                <p>1．收稻平台之域名、商标或标识、徽记、产品和服务名称，以及本网站内所有信息内容（本网站用户发布的信息除外），包括但不限于网站版面设计、色彩组合、文字、图片、软件、音频、视频、用户等级、评价体系、信用体系、榜单等数据信息，以及所有本网站使用之所有技术、数据分析模型、计算机软件、数据库（第三方创建并保留所有权和/或知识产权的除外），其所有权知识产权（包括版权、商标权、专利权、商业秘密及其他相关权利）均归属收稻平台唯一所有，未经收稻平台书面许可，任何人均不得擅自进行全部和局部复制、传播、转载、引用、镜像、下载和链接等使用和处分。   
+                2．用户在本网站发布的任何信息和内容（用户隐私信息除外），包括但不限于文字、图片、软件、音频、视频等，均被视为永久、免费且不可撤销地许可收稻平台自行或许可其关联方、业务合作方、宣传方不受任何限制的使用和处分。
+                3．任何单位或者个人未经许可不得以任何方式引诱本网站用户或者第三方复制转载本网站之信息内容，或者同意该用户或者第三方复制转载本网站内容。
+                4．任何违反本站知识产权声明的行为，本站保留进一步追究法律责任的权利。</P>    
+            </div>
+       </div>
+   </div>
+   <div id="footer"></div>
+
+    <script type="text/javascript">
+        var headerHTML = template('header',{"headerState":3}); 
+        $('#header').html(headerHTML);
+        var footerHTML = template('footer',{}); 
+        $('#footer').html(footerHTML); 
+        var message = new Vue({
+            el: '#message',
+            data: {
+               nickName:'',
+               userName:'',
+               politicalStatusName:'',
+               cityName:'',
+               provinceName:'',
+               areaName:'',
+               educationName:'',
+               companyDesc:'',
+               orgTypeName:'',
+               ip:'',
+               headImg:''
+            },
+            filters:{
+               
+            },
+            mounted(){
+                var _this = this;
+                this.ip = ip;
+                //详情
+                $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url: "/hriceSite/user/get-user",
+                    data:{},
+                    success: function (res) {
+                        console.log(res);
+                        if (res.code == 0) {
+                            _this.nickName=res.data.nickName;
+                            _this.userName =res.data.userName ;
+                            _this.politicalStatusName=res.data.politicalStatusName;
+                            _this.cityName=res.data.cityName;
+                            _this.provinceName =res.data.provinceName ;
+                            _this.areaName=res.data.areaName;
+                            _this.headImg=res.data.userHead;
+                            if(res.data.orgType==0){
+                                _this.orgTypeName="个人";
+                            }else{
+                                _this.orgTypeName="企业";
+                            }
+                            
+                            _this.educationName=res.data.educationName;  
+                            _this.companyDesc=res.data.companyDesc;  
+
+                        }
+                    },
+                    error : function() {
+                        console.log("异常");
+                    }
+                });  
+                
+                
+            },
+            methods: {
+
+            }
+        })
+    </script>
+        
+</body>
+</html>
+
+

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>    
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="author" content=""/>
+    <meta name="copyright" content=""/>
+    <title></title>    
+    <link rel="stylesheet" href="../css/swiper.3.2.0.min.css" type="text/css">
+    <link href="../css/style.css" rel="stylesheet" type="text/css">
+    <link href="../css/iconfont.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="../public/build/template.js" type="text/javascript"></script> 
+    <script src="../js/vue.js" type="text/javascript"></script> 
+    <script src="../js/jquery-1.12.4.min.js" type="text/javascript"></script> 
+    <script src="../js/layer.js" type="text/javascript"></script> 
+    <script src="../js/public.js" type="text/javascript"></script> 
+    <script src="../js/swiper.3.2.0.jquery.min.js" type="text/javascript"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+</head>
+<body>
+  <div id="header"></div>
+  <div class="release-requirement" id="release">
+       <div class="main clearfix">
+            <div class="requirement-form">
+                <h3>快速发布需求</h3>
+                <select v-model="demandType">
+                    <option value="0">需求类型</option> 
+                    <optgroup :label="item.categoryName" v-for="(item,index) in categoryList">
+                      <option :value="i.id" v-for="(i,index) in item.categorys">{{i.categoryName}}</option>
+                    </optgroup>
+                </select>
+                <input type="text" placeholder="需求名称" v-model="name"/>
+                <input type="text" placeholder="需求人数" v-model="num"/>
+                <div class="requirement-area clearfix">
+                    <select v-model="provinceId" @click="changeArea(provinceId,1)">
+                        <option value="0">请选择</option>
+                        <option v-for="(item,index) in provinceList" :value="item">{{item.name}}</option>
+                    </select>
+                    <select v-model="cityId" @click="changeArea(cityId,2)">
+                        <option value="0">请选择</option>
+                        <option v-for="(item,index) in cityList" :value="item">{{item.name}}</option>
+                    </select>
+                    <select v-model="areaId">
+                        <option value="0">请选择</option>
+                        <option v-for="(item,index) in areaList" :value="item" >{{item.name}}</option>
+                    </select>
+                </div>
+            
+                <input type="text" placeholder="预支付金额" v-model="money"/>
+                <input type="text" placeholder="期望完成时间(天) " v-model="time"/>
+                <!-- <input type="text" placeholder="报名截止时间" class="requirement-time" v-model="stopTime"/> -->
+                <el-date-picker
+                v-model="stopTime"
+                type="date"
+                placeholder="选择日期"
+                format="yyyy 年 MM 月 dd 日"
+                value-format="yyyy-MM-dd"
+                >
+                </el-date-picker>
+                <textarea placeholder="详细的需求描述" v-model="content"></textarea> 
+                <a href="javascript:;" @click="submit">快速发布</a>   
+            </div>
+            <div class="requirement-tips">
+                <h5>服务注意事项：</h5>
+                <p>1、根据国家广告法新规，标题请不要使用不实虚假夸大的描述，如：国家级、最好、全网最低、第一、独家等限制级词语。</p>
+                <p>2、双方达成协议后，需求者先行托管服务费用，务必在完成时间后7天内提交验收，对方若7天内无响应，服务费用将自动支付。</p>
+                <p class="Key-hint">3.预支付金额发布成功后，系统自动托管预支付金额。</p>
+                <div>
+                    <a href="">联系客服</a>
+                    <p>每天09：00-21：00</p>
+                </div>
+            </div>
+       </div>
+  </div>
+  <div id="footer"></div>
+  
+  <script type="text/javascript">
+        var headerHTML = template('header',{}); 
+        $('#header').html(headerHTML);
+        var footerHTML = template('footer',{}); 
+        $('#footer').html(footerHTML);
+        var release = new Vue({
+            el: '#release',
+            data: {
+                demandType:'0',
+                name:'',
+                num:'',
+                provinceId:'0',
+                provinceList:[],
+                cityId:'0',
+                cityList:[],
+                areaId:'0',
+                areaList:[],
+                money:'',
+                time:'',
+                stopTime:'',
+                content:'',
+                categoryList:[]
+            },
+            filters:{
+               
+            },
+            mounted(){
+                var _this=this;
+                //需求分类
+                $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url: "/hriceSite/demand/init",
+                    success: function (res) {
+                        console.log(res);
+                        if (res.code == 0) {
+                           _this.categoryList = res.data.categoryList;
+                         
+                        }
+                    },
+                    error : function() {
+                        console.log("异常");
+                    }
+                });  
+                //省列表
+                $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url: "/hriceSite/address/address",
+                    data: {},
+                    success: function (res) {
+                        console.log(res);
+                        if (res.code == 0) {
+                            _this.provinceList=res.data;
+                        }
+                    },
+                    error : function() {
+                        console.log("异常");
+                    }
+                }); 
+               
+                
+            },
+            methods: {
+                changeArea:function(code,num){
+                    var _this=this;
+                    if(num==1){
+                        if(this.provinceId=="0"){
+                            this.cityId="0";
+                            this.cityList=[];
+                            this.areaId="0";
+                            this.areaList=[];
+                            return;
+                        }
+                    }
+                    if(num==2){
+                        if(this.cityId=="0"){
+                            this.areaId="0";
+                            this.areaList=[];
+                            return;
+                        }
+                    }
+                    $.ajax({
+                        type: "GET",
+                        dataType: "json",
+                        url: "/hriceSite/address/address",
+                        data: {"code":code.code},
+                        success: function (res) {
+                            console.log(res);
+                            if (res.code == 0) {
+                               switch(num){
+                                   case 1:_this.cityList=res.data;break;
+                                   case 2:_this.areaList=res.data;break;
+                               }
+                            }
+                        },
+                        error : function() {
+                            console.log("异常");
+                        }
+                    }); 
+                },
+                submit:function(){
+                    // var data={"categoryId":this.demandType,"provinceCode":this.provinceId.code,"provinceName":this.provinceId.name,"cityCode":this.cityId.code,"cityName":this.cityId.name,"areaName":this.areaId.name,"areaCode":this.areaId.code,"name":this.name,"personNum":this.num,"budget":this.money,"expectDay":this.time,"endTime":this.stopTime,"demandDesc":this.content};
+                    var data={"categoryId":this.demandType,"provinceCode":this.provinceId.code,"provinceName":this.provinceId.name,"cityCode":this.cityId.code,"cityName":this.cityId.name,"areaName":this.areaId.name,"areaCode":this.areaId.code,"name":this.name,"personNum":11,"budget":222,"expectDay":22,"endTime":this.stopTime,"demandDesc":this.content};
+                    console.log(data);
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "/hriceSite/provider/demand/publish",
+                        data:data,
+                        success: function (res) {
+                            console.log(res);
+                            if (res.code == 0) {
+                                layer.msg(res.message);                                                                            
+                            }
+                        },
+                        error : function() {
+                            console.log("异常");
+                        }
+                    }); 
+                }
+            }
+            
+        })
+    </script>
+        
+</body>
+</html>
+
+

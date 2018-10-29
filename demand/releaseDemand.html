@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>    
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="author" content=""/>
+    <meta name="copyright" content=""/>
+    <title></title>    
+    <link rel="stylesheet" href="../css/swiper.3.2.0.min.css" type="text/css">
+    <link href="../css/style.css" rel="stylesheet" type="text/css">
+    <link href="../css/iconfont.css" rel="stylesheet" type="text/css">
+    <script src="../public/build/template.js" type="text/javascript"></script> 
+    <script src="../js/vue.js" type="text/javascript"></script> 
+    <script src="../js/jquery-1.12.4.min.js" type="text/javascript"></script> 
+    <script src="../js/layer.js" type="text/javascript"></script> 
+    <script src="../js/public.js" type="text/javascript"></script> 
+    <script src="../js/swiper.3.2.0.jquery.min.js" type="text/javascript"></script>
+</head>
+<body>
+  <div id="header"></div>
+  <div class="detail main" id="detail">
+        <div class="catalog"><a href="demand.html" class="hover">需求大厅 </a>><a href="">专线管理1.0产品开发</a></div>
+        <div class="clearfix detail-main">
+            <div class="detail-package">
+                <div class="detail-describe">
+                    <div class="detail-title" v-cloak>{{name}}<span>软硬件开发</span></div>
+                    <div class="clearfix detail-section">
+                        <div class="detail-condition">
+                            <div v-cloak>需要人数：1 人</div>
+                            <div v-cloak>需要地点：{{provinceName}} - {{cityName}}</div>
+                            <div v-cloak>期望完成时间：{{expectDay}} 天</div>
+                            <div class="sign-up"><span>报名截止日期：{{endTime}}<div class=""><a href="javascript:;" class="delay">推迟</a><input type="text" class="delay-time none"/><a href="javascript:;" class="delay-true none">确定</a></div></span> </div>
+                            <div v-cloak>发布时间：{{publicTime}}</div>
+                            <div class="detail-close-tips" v-if="demandStatus==8"><i class="iconfont icon-jinggao1"></i>涉嫌违规，已自动关闭</div>
+                        </div>
+                        <div class="detail-price">
+                            <div>237000.00</div>
+                            <!-- <a href="javascript:;" class="hover">删除任务</a> -->
+                            <!-- <a href="javascript:;" class="hover">完成任务</a> -->
+                            <!-- 0：报名中 1：待确认 2：工作中 3：待验收 4：逾期 5：申诉中 6:待修改 7：已完成 8：已关闭 -->
+                            <div v-if="demandStatus==0">
+                                <a href="javascript:;"  @click="handle(id,6)">停止报名</a>
+                                <a href="javascript:;"  @click="handle(id,5)">开始任务</a>
+                                <a href="javascript:;"  @click="handle(id,6)">取消任务</a>
+                            </div>
+                            <div v-if="demandStatus==1">
+                                    <a href="javascript:;"  @click="handle(id,6)">停止报名</a>
+                                    <a href="javascript:;"  @click="handle(id,5)">开始任务</a>
+                                    <a href="javascript:;"  @click="handle(id,6)">取消任务</a>
+                                </div>
+                            <div v-if="demandStatus==8">
+                                <a href="javascript:;"  @click="handle(id,7)">申 诉</a>
+                                <a href="javascript:;"  @click="handle(id,6)">重新发布</a>
+                                <!-- <a href="javascript:;"  @click="handle(id,0)">删除任务</a> -->
+                            </div>
+                            <a href="javascript:;" v-if="demandStatus==2" @click="handle(id,2)" class="hover">完成任务</a>
+                            <!-- <div>
+                                <a href="javascript:;">申 诉</a>
+                                <a href="javascript:;">重新发布</a>
+                                <a href="javascript:;">删除任务</a>
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+                <div class="demand-detail-content">
+                    <div class="demand-description-tab clearfix">
+                        <a href="javascript:;" :class="{'hover': !showDemand}" @click="toggle(0)">需求描述</a>
+                        <a href="javascript:;" :class="{'hover': showDemand}" @click="toggle(1)">报名（10）</a>
+                        <a href="javascript:;" :class="{'hover': showDemand}" @click="toggle(2)">工作人员</a>
+                    </div>  
+                    <div class="requirement-main">
+                        <div class="requirement-description"  v-html="demandDesc" v-if="!showDemand">
+                            
+                        </div>
+                        <div class="demand-enroll" v-if="showDemand" v-cloak>
+                                <div class="demand-select">
+                                    <a href="javascript:;" :class="num==0 ? 'hover' : ''" @click="setType(0)">全部</a> <span>|</span> <a href="javascript:;" :class="num==1 ? 'hover' : ''" @click="setType(1)">已选中</a> <span>|</span> <a href="javascript:;" :class="num==2 ? 'hover' : ''" @click="setType(2)">未选中</a> 
+                                </div>
+                                <div class="enroll">
+                                    <div class="enroll-list clearfix" v-for="(item,index) in demandList">
+                                        <div style="background:url('../images/user.png') no-repeat center;background-size:cover;"></div>
+                                        <div class="enroll-main">
+                                            <div class="enroll-title clearfix"><span v-cloak>{{item.name}}</span></div>
+                                            <div class="enroll-message">
+                                                <span v-cloak>地点：{{item.cityName}}</span>
+                                                <span v-cloak>申请时间：{{item.publicTime}}</span>
+                                                
+                                            </div>
+                                            <p>{{item.demandDesc}}</p>
+                                        </div>
+                                        
+                                    </div>
+                                   
+                                </div>
+                        </div>
+                        <div class="demand-enroll none">
+                            <div class="demand-select">
+                                <a href="" class="hover">全部</a> <span>|</span> <a href="">已选中</a> <span>|</span> <a href="">未选中</a> 
+                            </div>
+                            <div class="enroll">
+                                <div class="enroll-list clearfix" v-for="(item,index) in demandList">
+                                    <div style="background:url('../images/user.png') no-repeat center;background-size:cover;"></div>
+                                    <div class="enroll-main">
+                                        <div class="enroll-title clearfix"><span>{{item.name}}</span><i>工作中</i></div>
+                                        <div class="enroll-message">
+                                            <span>地点：{{item.cityName}}</span>
+                                            <span>申请时间：{{item.publicTime}}</span>
+                                            <div><a href="">设为完成</a></div>
+                                            <div>
+                                                <a href="">验证通过</a>
+                                                <a href="" class="rejection">拒绝验收</a>
+                                            </div>
+                                        </div>
+                                        <p>多年项目开发经验，精通JAVA。多年项目开发经验，精通JAVA。多年项目开发经验，精通JAVA。多年项目开发经验，精通JAVA。多年项目开发经验，精通JAVA。多年...</p>
+                                    </div>
+                                    
+                                </div>
+                                
+                            </div>
+                         </div>
+                    </div>      
+                </div>
+            </div>
+            
+        </div>
+
+  </div>
+  <div id="footer"></div>
+    <script type="text/javascript">
+       var headerHTML = template('header',{}); 
+        $('#header').html(headerHTML);
+        var footerHTML = template('footer',{}); 
+        $('#footer').html(footerHTML); 
+       var detail = new Vue({
+            el: '#detail',
+            data: {
+               name:'',
+               demandDesc:'',
+               endTime:'',
+               expectDay:'',
+               publicTime:'',
+               budget:'',
+               provinceName:'',
+               cityName:'',
+               budget:'',
+               showDemand:false,
+               demandList:[],
+               num:0,
+               id:'',
+               demandStatus:''
+            },
+            filters:{
+               
+            },
+            mounted(){
+                var _this = this;
+               var Request = GetRequest(); 
+                var id = Request['id']; 
+                this.id= encodeURI(id);
+                console.log(id);
+                //需求详情
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "/hriceSite/demand/detail",
+                    data:{"demandId":id},
+                    success: function (res) {
+                        console.log(res);
+                        if (res.code == 0) {
+                            _this.name=res.data.name;
+                            _this.demandDesc=res.data.demandDesc;
+                            _this.endTime=res.data.endTime;
+                            _this.expectDay=res.data.expectDay;
+                            _this.publicTime=res.data.publicTime;
+                            _this.budget=res.data.budget;
+                            _this.provinceName=res.data.provinceName;
+                            _this.cityName =res.data.cityName ;
+                            _this.budget=res.data.budget;    
+                            _this.demandStatus=res.data.demandStatus;
+                        }
+                    },
+                    error : function() {
+                        console.log("异常");
+                    }
+                });  
+                //报名列表
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "/hriceSite/demand/demand-list",
+                    data: {"pageNum":1,"pageSize":3,"sort":0,"sortType":0},
+                    success: function (res) {
+                        console.log(res);
+                        if (res.code == 0) {
+                            _this.demandList = res.data.data;
+                            
+                        }
+                    },
+                    error : function() {
+                        console.log("异常");
+                    }
+                }); 
+                
+            },
+            methods: {
+                toggle:function(num){
+                    num==0?this.showDemand=false:this.showDemand=true;
+                },
+                handle:function(id,num){
+                    var url;
+                    if(num==0){
+                        url = "/hriceSite/provider/demand/check";//验收任务
+                    }else if(num==1){
+                        url = "/hriceSite/provider/demand/choice";//选中用户
+                    }else if(num==2){
+                        url = "/hriceSite/provider/demand/finish";//完成任务
+                    }else if(num==3){
+                       return;
+                    }else if(num==4){
+                        url = "/hriceSite/provider/demand/publish";//发布任务
+                    }else if(num==5){
+                        url = "/hriceSite/provider/demand/start";//开始工作
+                    }else if(num==6){
+                        url = "/hriceSite/provider/demand/updateStatus";//更改任务状态
+                    }else if(num==7){
+                        location.href="appeal.html";//申诉
+                    }
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: url,
+                        data: {"demandId":id},
+                        success: function (res) {
+                            console.log(res);
+                            if (res.code == 0) {
+                                layer.msg(res.message);
+                            }
+                        },
+                        error : function() {
+                            console.log("异常");
+                        }
+                    }); 
+                },
+                setType:function(num){
+                    this.num = num;
+                    var _this = this;
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "/hriceSite/demand/demand-list",
+                        data: {"demandStatus":num,"pageNum":1,"pageSize":3,"sort":0,"sortType":0},
+                        success: function (res) {
+                            console.log(res);
+                            if (res.code == 0) {
+                                _this.demandList = res.data.data;
+                               
+                            }
+                        },
+                        error : function() {
+                            console.log("异常");
+                        }
+                    }); 
+                },
+            }
+        })
+    </script>
+        
+</body>
+</html>
+
+

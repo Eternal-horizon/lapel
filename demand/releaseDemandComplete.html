@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>    
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="author" content=""/>
+    <meta name="copyright" content=""/>
+    <title></title>    
+    <link rel="stylesheet" href="../css/swiper.3.2.0.min.css" type="text/css">
+    <link href="../css/style.css" rel="stylesheet" type="text/css">
+    <link href="../css/iconfont.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="../public/build/template.js" type="text/javascript"></script> 
+    <script src="../js/vue.js" type="text/javascript"></script> 
+    <script src="../js/jquery-1.12.4.min.js" type="text/javascript"></script> 
+    <script src="../js/layer.js" type="text/javascript"></script> 
+    <script src="../js/public.js" type="text/javascript"></script> 
+    <script src="../js/swiper.3.2.0.jquery.min.js" type="text/javascript"></script>
+</head>
+<body>
+  <div id="header"></div>
+  <div class="detail main" id="detail">
+        <div class="catalog"><a href="" class="hover">需求大厅 </a>><a href="">专线管理1.0产品开发</a></div>
+        <div class="clearfix detail-main">
+            <div class="detail-package">
+                <div class="detail-describe">
+                    <div class="detail-title" v-cloak>{{name}}<span>软硬件开发</span></div>
+                    <div class="clearfix detail-section">
+                        <div class="detail-condition">
+                            <div>需要人数：1 人</div>
+                            <div>需要地点：{{provinceName}} - {{cityName}}</div>
+                            <div>期望完成时间：{{expectDay}} 天</div>
+                            <div class="sign-up"><span>报名截止日期：{{endTime}}</div>
+                            <div>发布时间：{{publicTime}}</div>
+                           
+                        </div>
+                        <div class="detail-price">
+                            <div>237000.00</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="demand-detail-content">
+                    <div class="demand-description-tab clearfix">
+                        <a href="javascript:;" class="hover">分配薪资</a>
+                        <span><i>37000.00</i>/237000.00</span>
+                    </div>  
+                    <div class="requirement-main">
+                        <div class="demand-enroll">
+                            <div class="enroll">
+                                <div class="enroll-list clearfix">
+                                    <div style="background:url('../images/user.png') no-repeat center;background-size:cover;"></div>
+                                    <div class="enroll-main">
+                                        <div class="enroll-title clearfix"><span>上海谦喜信息科技有限公司</span></div>
+                                        <div class="enroll-message">
+                                            <span>地点：南京市</span>
+                                            <span>申请时间：2018-10-05</span>
+                                            <div class="distribution-input"><i class="iconfont icon-jinggao"></i><span>可分配金额不足</span><input type="text" v-model="money" @keyup="set"/>元</div>
+                                        </div>
+                                        <p>多年项目开发经验，精通JAVA。多年项目开发经验，精通JAVA。多年项目开发经验，精通JAVA。多年项目开发经验，精通JAVA。多年项目开发经验，精通JAVA。多年...</p>
+                                    </div>
+                                    
+                                </div>
+                                
+                                <div class="distribution">
+                                    <a href="javascript:;" @click="submit">确认分配</a>
+                                    <p>注：剩余未分配托管金额，将在两个工作日内足额退还</p>
+                                </div>
+                            </div>
+                        </div> 
+                </div>
+            </div>
+            
+        </div>
+
+  </div>
+  <div id="footer"></div>
+  
+    <script type="text/javascript">
+        var headerHTML = template('header',{}); 
+        $('#header').html(headerHTML);
+        var footerHTML = template('footer',{}); 
+        $('#footer').html(footerHTML); 
+         var detail = new Vue({
+            el: '#detail',
+            data: {
+               name:'',
+               demandDesc:'',
+               endTime:'',
+               expectDay:'',
+               publicTime:'',
+               budget:'',
+               provinceName:'',
+               cityName:'',
+               budget:'',
+               showDemand:false,
+               demandList:[],
+               num:0,
+               money:''
+               
+            },
+            filters:{
+               
+            },
+            mounted(){
+                var _this = this;
+                Request = GetRequest(); 
+                var id = Request['id']; 
+               
+                console.log(id);
+                //需求详情
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "/hriceSite/demand/detail",
+                    data:{"demandId":id},
+                    success: function (res) {
+                        console.log(res);
+                        if (res.code == 0) {
+                            _this.name=res.data.name;
+                            _this.demandDesc=res.data.demandDesc;
+                            _this.endTime=res.data.endTime;
+                            _this.expectDay=res.data.expectDay;
+                            _this.publicTime=res.data.publicTime;
+                            _this.budget=res.data.budget;
+                            _this.provinceName=res.data.provinceName;
+                            _this.cityName =res.data.cityName ;
+                            _this.budget=res.data.budget;    
+                           
+                        }
+                    },
+                    error : function() {
+                        console.log("异常");
+                    }
+                });  
+                //报名列表
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "/hriceSite/demand/demand-list",
+                    data: {"showSelf":0,"pageNum":1,"pageSize":3,"sort":0,"sortType":0},
+                    success: function (res) {
+                        console.log(res);
+                        if (res.code == 0) {
+                            _this.demandList = res.data.data;
+                            
+                        }
+                    },
+                    error : function() {
+                        console.log("异常");
+                    }
+                }); 
+                
+            },
+            methods: {
+                set:function(){},
+                submit:function(){}
+            }
+        })
+    </script>
+        
+</body>
+</html>
+
+

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>    
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="author" content=""/>
+    <meta name="copyright" content=""/>
+    <title></title>    
+    <link rel="stylesheet" href="../css/swiper.3.2.0.min.css" type="text/css">
+    <link href="../css/style.css" rel="stylesheet" type="text/css">
+    <link href="../css/iconfont.css" rel="stylesheet" type="text/css">
+    <script src="../public/build/template.js" type="text/javascript"></script> 
+    <script src="../js/vue.js" type="text/javascript"></script> 
+    <script src="../js/jquery-1.12.4.min.js" type="text/javascript"></script> 
+    <script src="../js/layer.js" type="text/javascript"></script> 
+    <script src="../js/public.js" type="text/javascript"></script> 
+    <script src="../js/swiper.3.2.0.jquery.min.js" type="text/javascript"></script>
+    <!--[if lte IE 9]>
+        <script src="js/respond.min.js" type="text/javascript"></script>
+        <script src="js/html5shiv-printshiv.min.js" type="text/javascript"></script>
+    <![endif]-->    
+</head>
+  <div id="header"></div>
+  <div class="load" id="register">
+    <div class="load-main register-main">
+        <h3>注册</h3>
+        <div class="load-tab clearfix">
+            <a href="javascript:;" :class="{ 'hover' : isActive, '' : !isActive}"  @click="toggle">个人注册</a>
+            <a href="javascript:;" :class="{ 'hover' : !isActive, '' : isActive}"  @click="toggle">企业注册</a>
+        </div>
+        <div class="load-input-main">
+            <div class="load-input" v-if="showPersonal">
+                <div class="load-input-list">
+                    <input type="text" placeholder="请输入手机号" v-model="personal.phone" @keyup="hidePhone(1)"/>
+                    <p v-cloak v-if="personal.isPhone"><i class="iconfont icon-jinggao"></i>请输入正确的手机号</p>
+                </div>
+                <div class="load-input-list">
+                    <input type="password" placeholder="请设置最少6位密码" v-model="personal.password" @keyup="hidePassword(1)"/>
+                    <p  v-cloak v-if="personal.isPassword"><i class="iconfont icon-jinggao"></i>请设置正确的密码</p>
+                </div>
+                <div class="clearfix load-code">
+                    <input type="text" placeholder="请输入验证码" v-model="personal.yzm"/>
+                    <input type="button" value="获取验证码" v-if="personal.sendMsgDisabled" @click="getCode(1)"/> 
+                    <input type="button" class="verification-num" :value="personal.code" v-else />   
+                    <p  v-cloak v-if="personal.isyzm"><i class="iconfont icon-jinggao"></i>请输入正确的验证码</p>
+                </div>
+            </div>
+            <div class="load-input js-enterprise-register" v-if="showEnterprise">
+                <div class="load-input-list">
+                    <input type="text" placeholder="请输入手机号" v-model="enterprise.phone" @keyup="hidePhone(2)"/>
+                    <p v-cloak v-if="enterprise.isPhone"><i class="iconfont icon-jinggao"></i>请输入正确的手机号</p>
+                </div>
+                <div class="load-input-list">
+                    <input type="password" placeholder="请设置最少6位密码"  v-model="enterprise.password" @keyup="hidePassword(2)"/>
+                    <p v-cloak v-if="enterprise.isPassword"><i class="iconfont icon-jinggao"></i>请设置正确的密码</p>
+                </div>
+                <div class="clearfix load-code">
+                    <input type="text" placeholder="请输入验证码" v-model="enterprise.yzm" />
+                    <input type="button" value="获取验证码" v-if="enterprise.sendMsgDisabled" @click="getCode(2)"/> 
+                    <input type="button" class="verification-num" :value="enterprise.code" v-else />  
+                    <p v-cloak v-if="enterprise.isyzm"><i class="iconfont icon-jinggao"></i>请输入正确的验证码</p>
+                </div>
+            </div>
+            <p class="load-check">
+                <label>
+                    <input type="checkbox" v-model="argeement" />
+                    <i class="iconfont"></i>
+                    我已阅读并同意
+                    </label>
+                <a href="">《蓝聘网用户协议》</a>
+            </p>
+            
+            <a href="javascript:;" @click="register">注册</a>           
+        </div>
+        <p><a href="login.html">有账号，立即登录></a></p>
+        
+        
+    </div>
+  </div>
+  <div id="footer"></div>
+    
+    
+<script type="text/javascript">
+    var headerHTML = template('loginHeader',{"title":"欢迎注册"}); 
+    $('#header').html(headerHTML);
+    var footerHTML = template('footer',{}); 
+    $('#footer').html(footerHTML); 
+    var load = new Vue({
+            el: '#register',
+            data: {
+                type:0,
+                isActive:true,
+                argeement:false,
+                showPersonal:true,
+                showEnterprise:false,
+                personal:{
+                    phone:'',
+                    isPhone:false,
+                    yzm:'',
+                    isyzm:false, 
+                    password:'',
+                    isPassword:false,
+                    time: 60,
+                    code:"60s后获取",
+                    sendMsgDisabled: true
+                },
+                enterprise:{
+                    phone:'',
+                    isPhone:false,
+                    yzm:'',
+                    isyzm:false, 
+                    password:'',
+                    isPassword:false,
+                    time: 60,
+                    code:"60s后获取",
+                    sendMsgDisabled: true
+                }
+            },
+            methods: {
+                toggle:function(){
+                    this.isActive = !this.isActive;
+                    if(this.isActive){
+                        this.showPersonal=true;
+                        this.showEnterprise=false;
+                        this.type=0;
+                    }else{
+                        this.showPersonal=false;
+                        this.showEnterprise=true;
+                        this.type=1;
+                    }
+                },
+                hidePhone:function(num){
+                    if(num==1){
+                        if(this.personal.phone.length>0){
+                            this.personal.isPhone=false;   
+                        }
+                    }else{
+                        if(this.enterprise.phone.length>0){
+                            this.enterprise.isPhone=false;   
+                        }
+                    }
+                    
+                },
+                hidePassword:function(num){
+                    if(num==1){
+                        if(this.personal.password.length>0){
+                            this.personal.isPassword=false;   
+                        }
+                    }else{
+                        if(this.enterprise.password.length>0){
+                            this.enterprise.isPassword=false;   
+                        }
+                    }
+                },
+                hideyzm:function(num){
+                    if(num==1){
+                        if(this.personal.yzm.length>0){
+                            this.personal.isyzm=false;   
+                        }
+                    }else{
+                        if(this.enterprise.yzm.length>0){
+                            this.enterprise.isyzm=false;   
+                        }
+                    }
+                    
+                },
+                register:function(){
+                    var _this =this;
+                    var data,pwdLevel;
+                    var reg_phone = /1\d{10}/;
+                    if(this.type==0){
+                        if(this.personal.phone==""||this.personal.phone.length<11||!reg_phone.test(this.personal.phone)){
+                            this.personal.isPhone=true; 
+                            return;
+                        }
+                        if(this.personal.password==""||this.personal.password.length<6){
+                            this.personal.isPassword=true; 
+                            return;
+                        }else{
+                            pwdLevel = 0;
+                            if(this.personal.password.match(/[a-zA-Z]/g)){pwdLevel++;}
+                            if(this.personal.password.match(/[0-9]/g)){pwdLevel++;}
+                            if(this.personal.password.match(/[.*_]/g)){pwdLevel++;}
+                            if(this.personal.password.match(/(.*_[^a-zA-Z0-9])/g)){pwdLevel++;}
+                            if(pwdLevel > 3){pwdLevel=3;}
+                             console.log(pwdLevel);
+                            
+                        }
+                        if(this.personal.yzm==""){
+                            this.personal.isyzm=true; 
+                            return;
+                        }    
+                        data ={"orgType":_this.type,"mobile":_this.personal.phone,"password":_this.personal.password,"code":this.personal.yzm,"pwdLevel":pwdLevel}
+                    }else{
+                        if(this.enterprise.phone.length<11||!reg_phone.test(this.enterprise.phone)){
+                            this.enterprise.isPhone=true; 
+                            return;
+                        }
+                        if(this.enterprise.password=="" || this.enterprise.password.length<6){
+                            this.enterprise.isPassword=true;
+                            return; 
+                        }else{
+                            pwdLevel = 0;
+                            if(this.enterprise.password.match(/[a-zA-Z]/g)){pwdLevel++;}
+                            if(this.enterprise.password.match(/[0-9]/g)){pwdLevel++;}
+                            if(this.enterprise.password.match(/[.*_]/g)){pwdLevel++;}
+                            if(this.enterprise.password.match(/(.*_[^a-zA-Z0-9])/g)){pwdLevel++;}
+                            if(pwdLevel > 3){pwdLevel=3;}
+                             console.log(pwdLevel);
+                        }
+                        if(this.enterprise.yzm==""){
+                            this.enterprise.isyzm=true; 
+                            return;
+                        }   
+                        data ={"orgType":_this.type,"mobile":_this.enterprise.phone,"password":_this.enterprise.password,"code":this.enterprise.yzm,"pwdLevel":pwdLevel}
+                    }
+                    if(!this.argeement){
+                        layer.msg('请同意用户协议');  
+                    } 
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "/hriceSite/user/register ",
+                        data: data,
+                        success: function (res) {
+                            console.log(res);
+                            layer.msg(res.message);
+                            if (res.code == 0) {
+                                location.href="../index/index.html";  
+                            }
+                        },
+                        error : function() {
+                            console.log("异常");
+                        }
+                    });    
+                
+                },
+                getCode:function(num){
+                    var reg_phone = /1\d{10}/;
+                    var _this = this;
+                    var data;
+                    if(num==1){
+                        if(this.personal.phone.length<11){
+                            this.personal.isPhone=true;
+                            return;
+                        }
+                        if(!reg_phone.test(this.personal.phone)){   //验证手机是否符合格式
+                            this.personal.isPhone=true;
+                            return;
+                        }
+                        this.personal.sendMsgDisabled = false;
+                        var interval1 = window.setInterval(function() {
+                            
+                            if ((_this.personal.time--) <= 0) {
+                            _this.personal.time = 60;
+                            _this.personal.sendMsgDisabled = true;
+                            window.clearInterval(interval1);
+                            }
+                            _this.personal.code=_this.personal.time+"s后获取";
+                        }, 1000);
+                        data={"type":1,"mobile":_this.personal.phone};      
+                    }else{
+                        if(this.enterprise.phone.length<11){
+                            this.enterprise.isPhone=true;
+                            return;
+                        }
+                        if(!reg_phone.test(this.enterprise.phone)){   //验证手机是否符合格式
+                            this.enterprise.isPhone=true;
+                            return;
+                        }
+                        this.enterprise.sendMsgDisabled = false;
+                        var interval2 = window.setInterval(function() {
+                            if ((_this.enterprise.time--) <= 0) {
+                            _this.enterprise.time = 60;
+                            _this.enterprise.sendMsgDisabled = true;
+                            window.clearInterval(interval2);
+                            }
+                            _this.enterprise.code=_this.enterprise.time+"s后获取";
+
+                        }, 1000);
+                        data={"type":1,"mobile":_this.enterprise.phone};    
+                    }
+                    
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "/hriceSite/user/get-verification-code",
+                        data: data,
+                        success: function (res) {
+                            console.log(res);
+                            layer.msg(res.message);  
+                        },
+                        error : function() {
+                            console.log("异常");
+                        }
+                    });
+                }
+                    
+            }
+        })
+    
+    </script>
+      
+        
+</div>
+</html>
+
+
